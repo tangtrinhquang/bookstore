@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Hidehalo\Nanoid\Client;
+use Illuminate\Auth\Access\Gate;
 
 class UserController extends Controller
 {
@@ -19,66 +20,36 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
         $this->client = new Client();
     }
 
     /**
-     * Get the token array structure.
+     * Display a listing of the resource.
      *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
-    protected function createNewToken($token)
+    public function index()
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Token generated successfully',
-            'data' => [
-                'token_type' => 'bearer',
-                'access_token' => $token,
-                'expires_in' => Auth::factory()->getTTL() * 60,
-            ]
-        ]);
+        //
     }
 
     /**
-     * Get a JWT via given credentials.
+     * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
+    public function create()
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|max:255',
-            'password' => 'required|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'error' => [
-                    'status' => 400,
-                    'fields' => $validator->errors(),
-                    'message' => 'Something is wrong with this field',
-                ]
-            ], 400);
-        }
-
-        if (!$token = Auth::attempt($validator->validated())) {
-            return response()->json(['error' => 'Email or Password is invalid'], 401);
-        }
-
-        return $this->createNewToken($token);
+        //
     }
 
     /**
-     * Register a User.
+     * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function register(Request $request)
+    public function store(Request $request)
     {
         $data = $request->all();
 
@@ -112,63 +83,53 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'status' => 201,
-            'message' => 'User registered successfully',
+            'message' => 'User created successfully',
             'data' => $user,
         ], 201);
     }
 
     /**
-     * Log the user out (Invalidate the token).
+     * Display the specified resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function logout()
+    public function show($id)
     {
-        Auth::logout();
-
-        return response()->json(['message' => 'User signed out successfully']);
+        //
     }
 
     /**
-     * Refresh a token.
+     * Show the form for editing the specified resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function refreshToken()
+    public function edit($id)
     {
-        return $this->createNewToken(Auth::refresh());
+        //
     }
 
     /**
-     * Get the authenticated User.
+     * Update the specified resource in storage.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function userProfile()
+    public function update(Request $request, $id)
     {
-        return response()->json(Auth::user());
+        //
     }
 
-    public function changePassword(Request $request)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
     {
-        $validator = Validator::make($request->all(), [
-            'oldPassword' => 'required',
-            'newPassword' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $user_id = Auth::user()->user_id;
-
-        $user = User::where('user_id', $user_id)->update(
-            ['password' => bcrypt($request->new_password)]
-        );
-
-        return response()->json([
-            'success' => true,
-            'message' => 'User changed password successfully',
-            'user' => $user,
-        ], 201);
+        //
     }
 }

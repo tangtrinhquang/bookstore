@@ -14,7 +14,7 @@ class AuthorController extends Controller
     protected $client;
 
     /**
-     * Create a new UserController instance.
+     * Create a new AuthorController instance.
      *
      * @return void
      */

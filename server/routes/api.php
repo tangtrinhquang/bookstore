@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,17 +21,21 @@ Route::group([
 ], function () {
     Route::group(
         [
-            'prefix' => 'user',
+            'prefix' => 'auth',
         ],
         function () {
-            Route::post('/login', [UserController::class, 'login']);
-            Route::post('/register', [UserController::class, 'register']);
-            Route::post('/logout', [UserController::class, 'logout']);
-            Route::post('/refresh-token', [UserController::class, 'refreshToken']);
-            Route::get('/user-profile', [UserController::class, 'userProfile']);
-            Route::post('/change-password', [UserController::class, 'changePassword']);
+            Route::post('/login', [AuthenticationController::class, 'login']);
+            Route::post('/register', [AuthenticationController::class, 'register']);
+            Route::post('/logout', [AuthenticationController::class, 'logout']);
+            Route::post('/refresh-token', [AuthenticationController::class, 'refreshToken']);
+            Route::get('/user-profile', [AuthenticationController::class, 'userProfile']);
+            Route::post('/change-password', [AuthenticationController::class, 'changePassword']);
         }
     );
-
-    Route::resource('author', AuthorController::class);
+    Route::group([
+        'middleware' => ['can:isAdmin']
+    ], function () {
+        Route::resource('', UserController::class)->middleware('can:isAdmin');
+        Route::resource('author', AuthorController::class)->middleware('can:isAdmin');
+    });
 });
