@@ -8,8 +8,8 @@ export default function AuthenticationRoutes() {
     return (
         <ScrollToTop>
             <Routes>
-                <Route path='/login' component={Login} />
-                <Route path='/register' component={Register} />
+                <Route path='/login' element={<Login/>} />
+                <Route path='/register' element={<Register/>} />
             </Routes>
         </ScrollToTop>
     );

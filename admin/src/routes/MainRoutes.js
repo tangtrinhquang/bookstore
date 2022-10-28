@@ -2,6 +2,8 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import ScrollToTop from '../components/ScrollToTop'
 import Dashboard from '../tabs/Dashboard/Dashboard';
+import Login from '../tabs/Authentication/Login';
+import Register from '../tabs/Authentication/Register';
 
 import BookList from '../tabs/Books/BookList';
 import BookEdit from '../tabs/Books/BookEdit';
@@ -20,28 +22,30 @@ export default function MainRoutes() {
         <>
             <ScrollToTop>
                 <Routes>
-                    <Route path="/" exact component={Dashboard} />
+                    <Route path="/" element={<Dashboard/>} />
+                    <Route path='/login' element={<Login/>} />
+                    <Route path='/register' element={<Register/>} />
 
                     <Route path="/books">
-                        <Route index component={BookList} />
-                        <Route path=":id/edit" component={BookEdit} />
-                        <Route path=":pageNumber" component={BookList} />
+                        <Route index element={<BookList/>} />
+                        <Route path=":id/edit" element={<BookEdit/>} />
+                        <Route path=":pageNumber" element={<BookList/>} />
                     </Route>
 
                     <Route path='/users'> 
-                        <Route index component={UserList}/>
-                        <Route path=':id/edit' component={UserEdit} />  
+                        <Route index element={<UserList/>}/>
+                        <Route path=':id/edit' element={<UserEdit/>} />  
                     </Route> 
 
                     <Route path='/authors'></Route>
 
                     <Route path='/orders'>
-                        <Route index component={OrderList} />
-                        <Route path=':id' component={OrderDTL} />
+                        <Route index element={<OrderList/>} />
+                        <Route path=':id' element={<OrderDTL/>} />
                     </Route> 
 
-                    <Route path="/profile" component={Profile} />
-                    <Route path="*" component={NotFound} />
+                    <Route path="/profile" element={<Profile/>} />
+                    <Route path="*" element={<NotFound/>} />
                 </Routes>
             </ScrollToTop>
         </>

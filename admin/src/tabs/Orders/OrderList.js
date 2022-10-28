@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import MainLayout from '../../layouts/MainLayout';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     seeMore: {
@@ -28,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const OrderList = ({ history }) => {
+const OrderList = () => {
+    const navigate = useNavigate()
     const classes = useStyles();
 
     const dispatch = useDispatch();
@@ -39,13 +41,13 @@ const OrderList = ({ history }) => {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
 
-    useEffect(() => {
-        if (userInfo && userInfo.isAdmin) {
-            dispatch(listOrders());
-        } else {
-            history.push('/login');
-        }
-    }, [dispatch, history, userInfo]);
+    // useEffect(() => {
+    //     if (userInfo && userInfo.isAdmin) {
+    //         navigate(listOrders());
+    //     } else {
+    //         navigate('/login');
+    //     }
+    // }, [dispatch, userInfo]);
 
     return (
         <MainLayout>

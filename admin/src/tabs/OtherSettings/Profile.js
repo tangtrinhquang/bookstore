@@ -15,6 +15,7 @@ import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import { Typography } from '@material-ui/core';
 import MainLayout from '../../layouts/MainLayout';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -39,7 +40,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Profile = ({ location, history }) => {
+const Profile = () => {
+    const navigate = useNavigate()
     const classes = useStyles();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -61,7 +63,7 @@ const Profile = ({ location, history }) => {
 
     useEffect(() => {
         if (!userInfo) {
-            history.push('/login');
+            navigate('/login');
         } else {
             if (!user || !user.name || success) {
                 dispatch({ type: USER_UPDATE_PROFILE_RESET });
@@ -72,7 +74,7 @@ const Profile = ({ location, history }) => {
                 setAvatar(user.avatar);
             }
         }
-    }, [dispatch, history, userInfo, user, success])
+    }, [dispatch, userInfo, user, success])
 
     const uploadFileHandler = async (e) => {
         const file = e.target.files[0];

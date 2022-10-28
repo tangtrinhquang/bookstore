@@ -24,6 +24,7 @@ import {
 import { BOOK_CREATE_RESET } from '../../messages/bookMessages';
 import Typography from '@material-ui/core/Typography';
 import MainLayout from '../../layouts/MainLayout';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     createdButton: {
@@ -45,9 +46,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const BookList = ({ history, match }) => {
+const BookList = () => {
     const classes = useStyles();
-    const pageNumber = match.params.pageNumber || 1;
+    const navigate = useNavigate()
+    const { pgNumber } = useParams();
+    const pageNumber = pgNumber || 1;
 
     const dispatch = useDispatch();
 
@@ -72,26 +75,25 @@ const BookList = ({ history, match }) => {
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
-    useEffect(() => {
-        dispatch({ type: BOOK_CREATE_RESET })
+    // useEffect(() => {
+    //     dispatch({ type: BOOK_CREATE_RESET })
 
-        if (!userInfo || !userInfo.isAdmin) {
-            history.push('/login')
-        }
-        if (successCreate) {
-            history.push(`/books/${createdBook._id}/edit`)
-        } else {
-            dispatch(listBooks(pageNumber))
-        }
-    }, [
-        dispatch,
-        history,
-        userInfo,
-        successCreate,
-        successDelete,
-        createdBook,
-        pageNumber,
-    ])
+    //     if (!userInfo || !userInfo.isAdmin) {
+    //         navigate('/login')
+    //     }
+    //     if (successCreate) {
+    //         navigate(`/books/${createdBook._id}/edit`)
+    //     } else {
+    //         dispatch(listBooks(pageNumber))
+    //     }
+    // }, [
+    //     dispatch,
+    //     userInfo,
+    //     successCreate,
+    //     successDelete,
+    //     createdBook,
+    //     pageNumber,
+    // ])
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure')) {

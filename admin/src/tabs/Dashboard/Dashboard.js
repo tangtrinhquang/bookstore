@@ -15,6 +15,7 @@ import Hidden from '@material-ui/core/Hidden';
 import NewUsers from './NewUsers';
 import NewBooks from './NewBooks';
 import imageAdmin from '../../animation.gif';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -41,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Dashboard = ({ history }) => {
+const Dashboard = () => {
+    const navigate = useNavigate()
     const classes = useStyles();
     const basicHeightPaper = clsx(classes.paper, classes.basicHeight);
 
@@ -50,11 +52,11 @@ const Dashboard = ({ history }) => {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
 
-    useEffect(() => {
-        if (!userInfo || !userInfo.isAdmin) {
-            history.push('/login');
-        }
-    }, [dispatch, history, userInfo]);
+    // useEffect(() => {
+    //     if (!userInfo || !userInfo.isAdmin) {
+    //         navigate('/login');
+    //     }
+    // }, [dispatch, userInfo]);
 
     return (
         <MainLayout>
@@ -79,7 +81,7 @@ const Dashboard = ({ history }) => {
                     </CardActionArea>
                 </Grid>
                 <Grid item xs={6}>
-                    <Grid container justify="center" spacing={2}>
+                    <Grid container justifyContent="center" spacing={2}>
                         <Grid item xs={6}>
                             <Paper className={classes.paper}>
                                 <NewUsers />

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../actions/userActions';
 import { makeStyles } from '@material-ui/core/styles';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
@@ -133,7 +133,7 @@ const MainLayout = ({ children }) => {
     const dispatch = useDispatch();
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
-    const theme = createMuiTheme({
+    const theme = createTheme({
         palette: {
             type: 'light',
             primary: {
@@ -277,14 +277,6 @@ const MainLayout = ({ children }) => {
                                     <LayersIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Authors" />
-                            </ListItem>
-                        </Link>
-                        <Link color="inherit" href="/posts">
-                            <ListItem button>
-                                <ListItemIcon>
-                                    <PostAddIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Posts" />
                             </ListItem>
                         </Link>
                     </List>

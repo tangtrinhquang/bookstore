@@ -35,6 +35,7 @@ import * as types from '../../messages/orderMessages'
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
 import MainLayout from '../../layouts/MainLayout';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -62,9 +63,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Order = ({ match, history }) => {
+const Order = () => {
+    const navigate = useNavigate()
     const classes = useStyles();
-    const orderId = match.params.id
+    const { id } = useParams();
+    const orderId = id;
 
     const [sdkReady, setSdkReady] = useState(false)
     const dispatch = useDispatch()
@@ -98,9 +101,9 @@ const Order = ({ match, history }) => {
     }
 
     useEffect(() => {
-        if (!userInfo) {
-            history.push('/login')
-        }
+        // if (!userInfo) {
+        //     navigate('/login')
+        // }
 
         const addPayPalScript = async () => {
             const { data: clientId } = await axios.get(`/api/config/paypal`)

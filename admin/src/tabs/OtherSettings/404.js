@@ -29,18 +29,17 @@ const NotFound = () => {
         <div className={classes.root}>
             <Container component="main" className={classes.main} maxWidth="sm">
                 <Typography variant="h2" component="h1" gutterBottom>
-                    Not Found
+                    No such page
                 </Typography>
                 <Typography variant="h5" component="h2" gutterBottom>
-                    {'Pin a footer to the bottom of the viewport.'}
-                    {'The footer will move as the main element of the page grows.'}
+                    {"There's no such page."}
                 </Typography>
-                <Typography variant="body1">Your address is not exists.</Typography>
+                <Typography variant="body1">Perhaps you'd like to <Link href="/">go back?</Link></Typography>
             </Container>
             <footer className={classes.footer}>
                 <Container maxWidth="sm">
                     <Link color="inherit" href="/">
-                        <Typography variant="body1">Come back dashboard is here.</Typography>
+                        <Typography variant="body1">&gt;Go back to Dashboard.</Typography>
                     </Link>
                 </Container>
             </footer>

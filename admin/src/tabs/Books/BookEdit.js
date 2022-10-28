@@ -18,6 +18,7 @@ import Loader from '../../components/Loader';
 import { detailBook, updateBook } from '../../actions/bookActions'
 import { BOOK_UPDATE_RESET } from '../../messages/bookMessages'
 import MainLayout from '../../layouts/MainLayout';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const genresType = [
     { value: 'Adventure' },
@@ -50,9 +51,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const BookEdit = ({ history, match }) => {
+const BookEdit = () => {
+    const navigate = useNavigate();
     const classes = useStyles();
-    const bookId = match.params.id;
+    const { id } = useParams()
+    const bookId = id;
 
     const [name, setName] = useState('');
     const [price, setPrice] = useState(0);
@@ -83,7 +86,7 @@ const BookEdit = ({ history, match }) => {
     useEffect(() => {
         if (successUpdate) {
             dispatch({ type: BOOK_UPDATE_RESET })
-            history.push('/books');
+            navigate('/books');
         } else {
             if (!book.name || book._id !== bookId) {
                 dispatch(detailBook(bookId));
@@ -104,7 +107,6 @@ const BookEdit = ({ history, match }) => {
         }
     }, [
         dispatch,
-        history,
         bookId,
         book,
         successUpdate

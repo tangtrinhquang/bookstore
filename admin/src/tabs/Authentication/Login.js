@@ -14,6 +14,7 @@ import { login } from '../../actions/userActions';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import AuthLayout from '../../layouts/AuthenticationLayout';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -35,7 +36,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Login = ({ location, history }) => {
+const Login = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const classes = useStyles();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -49,9 +52,9 @@ const Login = ({ location, history }) => {
 
     useEffect(() => {
         if (userInfo && userInfo.isAdmin) {
-            history.push(redirect)
+            navigate(redirect)
         }
-    }, [history, userInfo, redirect])
+    }, [userInfo, redirect])
 
     const submitHandler = (e) => {
         e.preventDefault()

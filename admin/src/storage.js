@@ -1,4 +1,6 @@
-import { configureStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
 import reducer from './reducers/combineReducer';
 
 const userInfoFromStorage = localStorage.getItem('userInfo')
@@ -9,9 +11,12 @@ const initialState = {
     userLogin: { userInfo: userInfoFromStorage },
 };
 
-const storage = configureStore(
+const middleware = [thunk];
+
+const storage = createStore(
     reducer,
     initialState,
+    composeWithDevTools(applyMiddleware(...middleware))
 );
 
 export default storage;

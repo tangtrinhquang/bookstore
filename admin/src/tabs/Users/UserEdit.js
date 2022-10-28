@@ -14,6 +14,7 @@ import Loader from '../../components/Loader';
 import { getUserDetail, updateUser } from '../../actions/userActions'
 import { USER_UPDATE_RESET } from '../../messages/userMessages'
 import MainLayout from '../../layouts/MainLayout';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -38,9 +39,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const UserEdit = ({ match, history }) => {
+const UserEdit = () => { 
+    const navigate = useNavigate()
     const classes = useStyles();
-    const userId = match.params.id
+    const { id } = useParams();
+    const userId = id;
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -61,7 +64,7 @@ const UserEdit = ({ match, history }) => {
     useEffect(() => {
         if (successUpdate) {
             dispatch({ type: USER_UPDATE_RESET })
-            history.push('/users')
+            navigate('/users')
         } else {
             if (!user.name || user._id !== userId) {
                 dispatch(getUserDetail(userId))
@@ -71,7 +74,7 @@ const UserEdit = ({ match, history }) => {
                 setIsAdmin(user.isAdmin)
             }
         }
-    }, [dispatch, history, userId, user, successUpdate])
+    }, [dispatch, userId, user, successUpdate])
 
     const submitHandler = (e) => {
         e.preventDefault()

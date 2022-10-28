@@ -16,6 +16,7 @@ import { register } from '../../actions/userActions';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import AuthLayout from '../../layouts/AuthenticationLayout';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,7 +38,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Register = ({ location, history }) => {
+const Register = () => {
+    const navigate = useNavigate()
+    const location = useLocation()
     const classes = useStyles();
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -54,9 +57,9 @@ const Register = ({ location, history }) => {
 
     useEffect(() => {
         if (userInfo) {
-            history.push(redirect)
+            navigate(redirect)
         }
-    }, [history, userInfo, redirect])
+    }, [userInfo, redirect])
 
     const submitHandler = (e) => {
         e.preventDefault()

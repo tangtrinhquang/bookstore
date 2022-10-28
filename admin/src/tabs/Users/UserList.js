@@ -18,6 +18,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Avatar from '@material-ui/core/Avatar';
 import MainLayout from '../../layouts/MainLayout';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     seeMore: {
@@ -31,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const UserList = ({ history }) => {
+const UserList = () => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const userList = useSelector((state) => state.userList)
@@ -43,13 +45,13 @@ const UserList = ({ history }) => {
     const userDelete = useSelector((state) => state.userDelete)
     const { success: successDelete } = userDelete
 
-    useEffect(() => {
-        if (userInfo && userInfo.isAdmin) {
-            dispatch(listUsers())
-        } else {
-            history.push('/login')
-        }
-    }, [dispatch, history, successDelete, userInfo])
+    // useEffect(() => {
+    //     if (userInfo && userInfo.isAdmin) {
+    //         dispatch(listUsers())
+    //     } else {
+    //         navigate('/login')
+    //     }
+    // }, [dispatch, successDelete, userInfo])
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure')) {
