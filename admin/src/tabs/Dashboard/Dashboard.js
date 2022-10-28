@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import MainLayout from '/admin/src/layouts/MainLayout';
+import MainLayout from '../../layouts/MainLayout';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
