@@ -17,6 +17,7 @@ import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import AuthLayout from '../../layouts/AuthenticationLayout';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { variants } from '@catppuccin/palette'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
         margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: variants.latte.lavender.hex,
     },
     form: {
         width: '100%', // Fix IE 11 issue.
@@ -150,14 +151,9 @@ const Register = () => {
                         Register
                         </Button>
                     <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-                                </Link>
-                        </Grid>
                         <Grid item>
                             <Link href="/login" variant="body2">
-                                {"You have been an account? Sign In"}
+                                {"Already have an account? Sign In"}
                             </Link>
                         </Grid>
                     </Grid>

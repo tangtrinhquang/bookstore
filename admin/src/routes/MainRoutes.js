@@ -11,6 +11,15 @@ import BookEdit from '../tabs/Books/BookEdit';
 import UserList from '../tabs/Users/UserList';
 import UserEdit from '../tabs/Users/UserEdit';
 
+import AuthorList from '../tabs/Authors/AuthorList';
+import AuthorEdit from '../tabs/Authors/AuthorEdit';
+
+import GenreList from '../tabs/Genres/GenreList';
+import GenreEdit from '../tabs/Genres/GenreEdit';
+
+import PublisherList from '../tabs/Publishers/PublisherList';
+import PublisherEdit from '../tabs/Publishers/PublisherEdit';
+
 import OrderList from '../tabs/Orders/OrderList';
 import OrderDTL from '../tabs/Orders/Order';
 
@@ -29,7 +38,7 @@ export default function MainRoutes() {
                     <Route path="/books">
                         <Route index element={<BookList/>} />
                         <Route path=":id/edit" element={<BookEdit/>} />
-                        <Route path=":pageNumber" element={<BookList/>} />
+                        <Route path=":pgNumber" element={<BookList/>} />
                     </Route>
 
                     <Route path='/users'> 
@@ -37,12 +46,28 @@ export default function MainRoutes() {
                         <Route path=':id/edit' element={<UserEdit/>} />  
                     </Route> 
 
-                    <Route path='/authors'></Route>
+                    <Route path='/authors'>
+                        <Route index element={<AuthorList/>}/>
+                        <Route path=':id/edit' element={<AuthorEdit/>} />
+                        <Route path=":pgNumber" element={<AuthorList/>} />
+                    </Route>
 
-                    <Route path='/orders'>
+                    <Route path='/genres'>
+                        <Route index element={<GenreList/>}/>
+                        <Route path=':id/edit' element={<GenreEdit/>} />
+                        <Route path=":pgNumber" element={<GenreList/>} />
+                    </Route>
+
+                    <Route path='/publishers'>
+                        <Route index element={<PublisherList/>}/>
+                        <Route path=':id/edit' element={<PublisherEdit/>} />
+                        <Route path=":pgNumber" element={<PublisherList/>} />
+                    </Route>
+
+                    {/* <Route path='/orders'>
                         <Route index element={<OrderList/>} />
                         <Route path=':id' element={<OrderDTL/>} />
-                    </Route> 
+                    </Route>  */}
 
                     <Route path="/profile" element={<Profile/>} />
                     <Route path="*" element={<NotFound/>} />

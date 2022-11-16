@@ -3,6 +3,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
+import {variants, labels} from '@catppuccin/palette'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
         margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: variants.latte.lavender.hex,
     },
     form: {
         width: '100%', // Fix IE 11 issue.

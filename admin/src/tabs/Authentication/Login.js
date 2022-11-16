@@ -15,6 +15,7 @@ import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import AuthLayout from '../../layouts/AuthenticationLayout';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { variants } from '@catppuccin/palette'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
         margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: variants.latte.maroon.hex,
     },
     form: {
         width: '100%', // Fix IE 11 issue.
@@ -107,7 +108,7 @@ const Login = () => {
                         type="submit"
                         fullWidth
                         variant="contained"
-                        color="primary"
+                        color="secondary"
                         className={classes.submit}
                     >
                         Sign In

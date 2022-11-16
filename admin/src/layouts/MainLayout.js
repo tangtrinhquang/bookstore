@@ -30,12 +30,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import {variants, labels} from '@catppuccin/palette'
 
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
+            <Link color="inherit" href="">
                 Your Website
             </Link>{' '}
             {new Date().getFullYear()}
@@ -137,19 +138,19 @@ const MainLayout = ({ children }) => {
         palette: {
             type: 'light',
             primary: {
-                light: '#58a5f0',
-                main: '#ec0000',
-                dark: '#8c0000',
+                light: '#8aadf4',
+                main: '#7287FD',
+                dark: '#8839ef',
             },
             secondary: {
-                light: '#ffffff',
-                main: '#f9a825',
+                light: '#eff1f5',
+                main: '#fe640b',
                 dark: '#a3680a',
-                contrastText: '#212121',
+                contrastText: '#4c4f69',
             },
             background: {
-                light: '#f3f0f0',
-                dark: '#030300',
+                light: '#e6e9ef',
+                dark: '#1e1e2e',
             },
         },
     });
@@ -247,14 +248,6 @@ const MainLayout = ({ children }) => {
                                 <ListItemText primary="Dashboard" />
                             </ListItem>
                         </Link>
-                        <Link color="inherit" href="/orders">
-                            <ListItem button>
-                                <ListItemIcon>
-                                    <ShoppingCartIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Orders" />
-                            </ListItem>
-                        </Link>
                         <Link color="inherit" href="/users">
                             <ListItem button>
                                 <ListItemIcon>
@@ -277,6 +270,22 @@ const MainLayout = ({ children }) => {
                                     <LayersIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Authors" />
+                            </ListItem>
+                        </Link>
+                        <Link color="inherit" href="/genres">
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <PostAddIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Genres" />
+                            </ListItem>
+                        </Link>
+                        <Link color="inherit" href="/publishers">
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <PostAddIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Publishers" />
                             </ListItem>
                         </Link>
                     </List>
