@@ -21,6 +21,7 @@ import {
     deleteBook,
     createBook,
 } from '../../actions/bookActions';
+import { authorName } from '../../actions/authorActions';
 import { BOOK_CREATE_RESET } from '../../messages/bookMessages';
 import Typography from '@material-ui/core/Typography';
 import MainLayout from '../../layouts/MainLayout';
@@ -54,50 +55,51 @@ const BookList = () => {
 
     const dispatch = useDispatch();
 
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin;
+
     const bookList = useSelector(state => state.bookList);
-    const { loading, error, books, page, pages, count } = bookList;
+    const { loading, error, books, details, gNames, pNames } = bookList;
 
     const bookDelete = useSelector(state => state.bookDelete);
     const {
-        loading: loadingDelete,
-        error: errorDelete,
-        success: successDelete,
+        loadingDelete,
+        errorDelete,
+        successDelete,
     } = bookDelete;
 
     const bookCreate = useSelector(state => state.bookCreate);
     const {
-        loading: loadingCreate,
-        error: errorCreate,
-        success: successCreate,
-        book: createdBook,
+        loadingCreate,
+        errorCreate,
+        successCreate,
+        createdBook,
     } = bookCreate;
 
-    const userLogin = useSelector(state => state.userLogin);
-    const { userInfo } = userLogin;
+    useEffect(() => {
+        dispatch({ type: BOOK_CREATE_RESET })
 
-    // useEffect(() => {
-    //     dispatch({ type: BOOK_CREATE_RESET })
-
-    //     if (!userInfo || !userInfo.isAdmin) {
-    //         navigate('/login')
-    //     }
-    //     if (successCreate) {
-    //         navigate(`/books/${createdBook._id}/edit`)
-    //     } else {
-    //         dispatch(listBooks(pageNumber))
-    //     }
-    // }, [
-    //     dispatch,
-    //     userInfo,
-    //     successCreate,
-    //     successDelete,
-    //     createdBook,
-    //     pageNumber,
-    // ])
+        if (!userInfo) {
+            navigate('/login')
+        }
+        if (successCreate) {
+            navigate(`/books/${createdBook._id}/edit`)
+        } else {
+            dispatch(listBooks(pageNumber))
+        }
+    }, [
+        dispatch,
+        userInfo,
+        successCreate,
+        successDelete,
+        createdBook,
+        pageNumber,
+    ])
 
     const deleteHandler = (id) => {
-        if (window.confirm('Are you sure')) {
+        if (window.confirm('Are you sure you want to delete this item?')) {
             dispatch(deleteBook(id))
+            window.location.reload(); 
         }
     }
 
@@ -108,20 +110,20 @@ const BookList = () => {
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                BOOK LIST ({count})
+                BOOK LIST ({books.length})
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         {loadingDelete && <Loader />}
-                        {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+                        {errorDelete && <Message variant='error'>{errorDelete}</Message>}
                         {loadingCreate && <Loader />}
-                        {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
+                        {errorCreate && <Message variant='error'>{errorCreate}</Message>}
                         {loading ? (
                             <Loader />
                         ) : error ? (
-                            <Message variant='danger'>{error}</Message>
-                        ) : (
+                            <Message variant='error'>{error}</Message> 
+                        ) : books.length === 0 ? <Loader/> : (
                             <>
                                 <Table size='small'>
                                     <TableHead>
@@ -131,32 +133,34 @@ const BookList = () => {
                                             <TableCell>NAME</TableCell>
                                             <TableCell>PRICE</TableCell>
                                             <TableCell>AUTHOR</TableCell>
-                                            <TableCell>DATE</TableCell>
+                                            <TableCell>GENRE</TableCell>
+                                            <TableCell>PUBLISHER</TableCell>
                                             <TableCell>ACTION</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {books.map((book, index) => (
-                                            <TableRow key={book._id}>
+                                        {books.data.map((book, index) => (
+                                            <TableRow key={book.book_id}>
                                                 <TableCell>{index + 1 + Number(pageNumber-1)*12}</TableCell>
                                                 <TableCell>
                                                     <img
-                                                        src={book.image}
+                                                        src={process.env.REACT_APP_API_URL+"/storage/"+book.image}
                                                         alt="Paella dish"
                                                         width="80"
                                                     />
                                                 </TableCell>
                                                 <TableCell>{book.name}</TableCell>
                                                 <TableCell>$ {book.price}</TableCell>
-                                                <TableCell>{book.author}</TableCell>
-                                                <TableCell>{book.publishedAt}</TableCell>
+                                                <TableCell>{details[index].data.data.name}</TableCell>
+                                                <TableCell>{gNames[index].data.data.name}</TableCell>
+                                                <TableCell>{pNames[index].data.data.name}</TableCell>
                                                 <TableCell>
-                                                    <Link href={`/books/${book._id}/edit`} onClick={(e) => e.preventDefault}>
+                                                    <Link href={`/books/${book.book_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button variant="contained" color="secondary" href="">
                                                             <EditIcon />
                                                         </Button>
                                                     </Link>
-                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(book._id)}>
+                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(book.book_id)}>
                                                         <DeleteIcon />
                                                     </Button>
                                                 </TableCell>
@@ -164,11 +168,11 @@ const BookList = () => {
                                         ))}
                                     </TableBody>
                                 </Table>
-                                <Paginate category='books' pages={pages} page={page} />
+                                {/* <Paginate category='books' pages={pages} page={page} /> */}
                             </>
                         )}
                         <div className={classes.createdButton}>
-                            <Button color="primary" href="#" onClick={createBookHandler}>
+                            <Button color="primary" href="/books/add" onClick={createBookHandler}>
                                 <AddCircleIcon fontSize="large"/>
                             </Button>
                         </div>

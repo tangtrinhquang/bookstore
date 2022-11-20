@@ -21,7 +21,7 @@ import {
     deleteGenre,
     createGenre,
 } from '../../actions/genreActions';
-import { AUTHOR_CREATE_RESET } from '../../messages/genreMessages';
+import { GENRE_CREATE_RESET } from '../../messages/genreMessages';
 import Typography from '@material-ui/core/Typography';
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -74,25 +74,25 @@ const GenreList = () => {
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
-    // useEffect(() => {
-    //     dispatch({ type: AUTHOR_CREATE_RESET });
+    useEffect(() => {
+        dispatch({ type: GENRE_CREATE_RESET });
 
-    //     if (!userInfo || !userInfo.isAdmin) {
-    //         navigate('/login');
-    //     }
-    //     if (successCreate) {
-    //         navigate(`/genres/${createdGenre._id}/edit`);
-    //     } else {
-    //         dispatch(listGenres('', pageNumber));
-    //     }
-    // }, [
-    //     dispatch,
-    //     userInfo,
-    //     successCreate,
-    //     successDelete,
-    //     createdGenre,
-    //     pageNumber,
-    // ]);
+        if (!userInfo) {
+            navigate('/login');
+        }
+        if (successCreate) {
+            navigate(`/genre/${createdGenre._id}/edit`);
+        } else {
+            dispatch(listGenres('', pageNumber));
+        }
+    }, [
+        dispatch,
+        userInfo,
+        successCreate,
+        successDelete,
+        createdGenre,
+        pageNumber,
+    ]);
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure?')) {
@@ -113,13 +113,13 @@ const GenreList = () => {
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         {loadingDelete && <Loader />}
-                        {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+                        {errorDelete && <Message variant='error'>{errorDelete}</Message>}
                         {loadingCreate && <Loader />}
-                        {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
+                        {errorCreate && <Message variant='error'>{errorCreate}</Message>}
                         {loading ? (
                             <Loader />
                         ) : error ? (
-                            <Message variant='danger'>{error}</Message>
+                            <Message variant='error'>{error}</Message>
                         ) : (
                             <>
                                 <Table size='small'>
@@ -134,19 +134,19 @@ const GenreList = () => {
                                     </TableHead>
                                     <TableBody>
                                         {genres.map((genre, index) => (
-                                            <TableRow key={genre._id}>
+                                            <TableRow key={genre.genre_id}>
                                                 <TableCell>{index + 1 + Number(pageNumber-1)*12}</TableCell>
                                                 <TableCell>{genre.name}</TableCell>
                                                 <TableCell>{genre.description}</TableCell>
                                                 <TableCell>
-                                                    <Link href={`/genres/${genre._id}/edit`} onClick={(e) => e.preventDefault}>
+                                                    <Link href={`/genre/${genre.genre_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button variant="contained" color="secondary" href="">
                                                             <EditIcon />
                                                         </Button>
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(genre._id)}>
+                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(genre.genre_id)}>
                                                         <DeleteIcon />
                                                     </Button>
                                                 </TableCell>

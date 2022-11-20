@@ -52,11 +52,11 @@ const Dashboard = () => {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
 
-    // useEffect(() => {
-    //     if (!userInfo || !userInfo.isAdmin) {
-    //         navigate('/login');
-    //     }
-    // }, [dispatch, userInfo]);
+    useEffect(() => {
+        if (!userInfo) {
+            navigate('/login');
+        }
+    }, [dispatch, userInfo]);
 
     return (
         <MainLayout>

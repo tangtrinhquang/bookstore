@@ -108,11 +108,11 @@ const PublisherEdit = () => {
                     Edit Publisher
                 </Typography>
                 {loadingUpdate && <Loader />}
-                {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+                {errorUpdate && <Message variant='error'>{errorUpdate}</Message>}
                 {loading ? (
                     <Loader />
                 ) : error ? (
-                    <Message variant='danger'>{error}</Message>
+                    <Message variant='error'>{error}</Message>
                 ) : (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>

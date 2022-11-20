@@ -45,10 +45,12 @@ const Profile = () => {
     const classes = useStyles();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('')
+    const [address, setAddress] = useState('')
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState(null);
-    const [avatar, setAvatar] = useState('');
+    // const [avatar, setAvatar] = useState('');
     const [uploading, setUploading] = useState(false);
     const dispatch = useDispatch();
 
@@ -61,50 +63,54 @@ const Profile = () => {
     const userUpdateProfile = useSelector((state) => state.userUpdateProfile);
     const { success } = userUpdateProfile;
 
+    const userData = JSON.parse(localStorage.getItem('userInfo'))
+
     useEffect(() => {
         if (!userInfo) {
             navigate('/login');
         } else {
-            if (!user || !user.name || success) {
+            if (Object.keys(user).length === 0) {
                 dispatch({ type: USER_UPDATE_PROFILE_RESET });
-                dispatch(getUserDetail('profile'));
+                dispatch(getUserDetail(userData.data.user_id));
             } else {
-                setName(user.name);
-                setEmail(user.email);
-                setAvatar(user.avatar);
+                setName(user.data.name);
+                setEmail(user.data.email);
+                setPhone(user.data.phone)
+                setAddress(user.data.address)
+                // setAvatar(user.avatar);
             }
         }
     }, [dispatch, userInfo, user, success])
 
-    const uploadFileHandler = async (e) => {
-        const file = e.target.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-        setUploading(true);
+    // const uploadFileHandler = async (e) => {
+    //     const file = e.target.files[0];
+    //     const formData = new FormData();
+    //     formData.append('image', file);
+    //     setUploading(true);
 
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            };
+    //     try {
+    //         const config = {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data',
+    //             },
+    //         };
 
-            const { data } = await axios.post(`/api/upload`, formData, config);
+    //         const { data } = await axios.post(`/api/upload`, formData, config);
 
-            setAvatar(data);
-            setUploading(false);
-        } catch (error) {
-            console.error(error);
-            setUploading(false);
-        };
-    };
+    //         // setAvatar(data);
+    //         setUploading(false);
+    //     } catch (error) {
+    //         console.error(error);
+    //         setUploading(false);
+    //     };
+    // };
 
     const submitHandler = (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             setMessage('Passwords do not match');
         } else {
-            dispatch(updateUserProfile({ id: user._id, name, email, avatar, password }));
+            dispatch(updateUserProfile({ user_id: userData.data.user_id, name: name, email: email, phone: phone, address: address, password: password }));
         }
     };
 
@@ -115,14 +121,14 @@ const Profile = () => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography>User Profile</Typography>
-                {message && <Message variant='danger'>{message}</Message>}
+                {message && <Message variant='error'>{message}</Message>}
                 { }
                 {success && <Message variant='success'>Profile Updated</Message>}
                 {loading ? (
                     <Loader />
                 ) : error ? (
-                    <Message variant='danger'>{error}</Message>
-                ) : (
+                    <Message variant='error'>{error}</Message>
+                ) : Object.keys(user).length === 0 ? <Loader/> : (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -136,7 +142,7 @@ const Profile = () => {
                                     name="name"
                                     autoComplete="name"
                                     autoFocus
-                                    value={name}
+                                    defaultValue={user.data.name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
@@ -151,11 +157,37 @@ const Profile = () => {
                                     name="email"
                                     autoComplete="email"
                                     autoFocus
-                                    value={email}
+                                    defaultValue={user.data.email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="phone"
+                                    label="Enter Phone Number"
+                                    name="phone"
+                                    defaultValue={user.data.phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="address"
+                                    label="Enter Address"
+                                    name="address"
+                                    defaultValue={user.data.address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                />
+                            </Grid>
+                            {/* <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
                                     required
@@ -179,18 +211,18 @@ const Profile = () => {
                                     </IconButton>
                                 </label>
                                 {uploading && <Loader />}
-                            </Grid>
+                            </Grid> */}
+                            <Typography>Change Password</Typography>
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
-                                    margin="normal"
                                     required
                                     fullWidth
                                     name="password"
-                                    label="Password"
+                                    label="New Password"
                                     type="password"
                                     id="password"
-                                    autoComplete="current-password"
+                                    autoComplete="new-password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
@@ -198,7 +230,6 @@ const Profile = () => {
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
-                                    margin="normal"
                                     required
                                     fullWidth
                                     name="confirmPassword"

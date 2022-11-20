@@ -39,12 +39,12 @@ const NewUsers = () => {
             {loading ? (
                 <Loader />
             ) : error ? (
-                <Message variant='danger'>{error}</Message>
-            ) : (
+                <Message variant='error'>{error}</Message>
+            ) : users.length === 0 ? <Loader/> : (
                 <List subheader={<ListSubheader>New Users</ListSubheader>}>
                     <Divider variant="inset" component="li" />
                     {
-                        users.slice(0, 5).map((user) => (
+                        users.data.slice(0, 5).map((user) => (
                             <Link key={user._id} color="inherit" href={`/users/${user._id}/edit`}>
                                 <ListItem button alignItems="flex-start">
                                     <ListItemAvatar>

@@ -7,10 +7,10 @@ export const genreListReducer = (state = { genres: [] }, action) => {
         case types.GENRE_LIST_SUCCESS:
             return {
                 loading: false,
-                genres: action.payload.genres,
-                pages: action.payload.pages,
-                page: action.payload.page,
-                count: action.payload.count,
+                genres: action.payload.data,
+                // pages: action.payload.pages,
+                // page: action.payload.page,
+                // count: action.payload.count,
             };
         case types.GENRE_LIST_FAIL:
             return { loading: false, error: action.payload };

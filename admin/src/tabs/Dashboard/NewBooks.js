@@ -38,16 +38,16 @@ const NewBooks = () => {
             {loading ? (
                 <Loader />
             ) : error ? (
-                <Message variant='danger'>{error}</Message>
-            ) : (
+                <Message variant='error'>{error}</Message>
+            ) : books.length === 0 ? <Loader/> : (
                 <List subheader={<ListSubheader>New Books</ListSubheader>}>
                     <Divider variant="inset" component="li" />
                     {
-                        books.slice(0, 5).map((book) => (
+                        books.data.slice(0, 5).map((book) => (
                             <Link key={book._id} color="inherit" href={`/books/${book._id}/edit`}>
                                 <ListItem button alignItems="flex-start">
                                     <ListItemAvatar>
-                                        <img alt="User" src={book.image} width="45" />
+                                        <img alt="Image" src={process.env.REACT_APP_API_URL+"/storage/"+book.image} width="45" />
                                     </ListItemAvatar>
                                     <ListItemText primary={book.name} />
                                 </ListItem>

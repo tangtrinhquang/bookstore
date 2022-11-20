@@ -45,6 +45,8 @@ const Register = () => {
     const classes = useStyles();
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
+    const [phone, setPhone] = useState('')
+    const [address, setAddress] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [message, setMessage] = useState(null)
@@ -67,7 +69,7 @@ const Register = () => {
         if (password !== confirmPassword) {
             setMessage('Passwords do not match')
         } else {
-            dispatch(register(name, email, password))
+            dispatch(register(name, email, password, phone, address))
         }
     }
 
@@ -110,6 +112,32 @@ const Register = () => {
                         autoFocus
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="phone"
+                        label="Phone Number"
+                        name="phone"
+                        autoComplete="phone"
+                        autoFocus
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                    />
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="address"
+                        label="Address"
+                        name="address"
+                        autoComplete="address"
+                        autoFocus
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
                     />
                     <TextField
                         variant="outlined"

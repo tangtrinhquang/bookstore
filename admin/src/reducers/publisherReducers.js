@@ -7,10 +7,10 @@ export const publisherListReducer = (state = { publishers: [] }, action) => {
         case types.PUBLISHER_LIST_SUCCESS:
             return {
                 loading: false,
-                publishers: action.payload.publishers,
-                pages: action.payload.pages,
-                page: action.payload.page,
-                count: action.payload.count,
+                publishers: action.payload.data,
+                // pages: action.payload.pages,
+                // page: action.payload.page,
+                // count: action.payload.count,
             };
         case types.PUBLISHER_LIST_FAIL:
             return { loading: false, error: action.payload };

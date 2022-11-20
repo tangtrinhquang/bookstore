@@ -7,10 +7,13 @@ export const bookListReducer = (state = { books: [] }, action) => {
         case types.BOOK_LIST_SUCCESS:
             return {
                 loading: false,
-                books: action.payload.books,
-                pages: action.payload.pages,
-                page: action.payload.page,
-                count: action.payload.count,
+                books: action.payload.data,
+                details : action.payload.details,
+                gNames : action.payload.gNames,
+                pNames : action.payload.pNames,
+                // pages: action.payload.data.pages,
+                // page: action.payload.data.page,
+                // count: action.payload.data.count,
             };
         case types.BOOK_LIST_FAIL:
             return { loading: false, error: action.payload };

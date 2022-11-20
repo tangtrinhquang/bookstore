@@ -253,7 +253,7 @@ const MainLayout = ({ children }) => {
                                 <ListItemIcon>
                                     <PeopleIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Customers" />
+                                <ListItemText primary="Users" />
                             </ListItem>
                         </Link>
                         <Link color="inherit" href="/books">

@@ -6,14 +6,39 @@ export const listBooks = (pageNumber = '') => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_LIST_REQUEST });
 
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            },
+        };
+
         const { data } = await axios.get(
-            `/api/books?pageNumber=${pageNumber}`
+            process.env.REACT_APP_API_URL+`/api/book?pageNumber=${pageNumber}`,
+            config
         );
+
+        const details = await Promise.all(data.data.map((el) => {
+                return axios.get(process.env.REACT_APP_API_URL+`/api/author/${el.author_id}`, config)
+            })
+        )
+
+        const gNames = await Promise.all(data.data.map((el) => {
+                return axios.get(process.env.REACT_APP_API_URL+`/api/genre/${el.genre_id}`, config)
+            })
+        )   
+
+        const pNames = await Promise.all(data.data.map((el) => {
+                return axios.get(process.env.REACT_APP_API_URL+`/api/publisher/${el.publisher_id}`, config)
+            })
+        )
 
         dispatch({
             type: types.BOOK_LIST_SUCCESS,
-            payload: data,
+            payload: { data, details, gNames, pNames }
         });
+
     } catch (error) {
         dispatch({
             type: types.BOOK_LIST_FAIL,
@@ -29,7 +54,7 @@ export const detailBook = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_DETAILS_REQUEST });
 
-        const { data } = await axios.get(`/api/books/${id}`);
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`);
 
         dispatch({
             type: types.BOOK_DETAILS_SUCCESS,
@@ -56,11 +81,11 @@ export const createBook = () => async (dispatch, getState) => {
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userInfo.data.access_token}`,
             }
         };
 
-        const { data } = await axios.post(`/api/books`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/book`, {}, config);
 
         dispatch({
             type: types.BOOK_CREATE_SUCCESS,
@@ -92,12 +117,12 @@ export const updateBook = (book) => async (dispatch, getState) => {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userInfo.data.access_token}`,
             },
         };
 
-        const { data } = await axios.put(
-            `/api/books/${book._id}`,
+        const { data } = await axios.put(  //post
+        process.env.REACT_APP_API_URL+`/api/book/${book._id}`,
             book,
             config
         );
@@ -136,11 +161,11 @@ export const deleteBook = (id) => async (dispatch, getState) => {
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userInfo.data.access_token}`,
             },
         };
 
-        await axios.delete(`/api/books/${id}`, config);
+        await axios.delete(process.env.REACT_APP_API_URL+`/api/book/${id}`, config);
 
         dispatch({
             type: types.BOOK_DELETE_SUCCESS,

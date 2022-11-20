@@ -2,12 +2,20 @@ import axios from 'axios';
 import { logout } from './userActions';
 import * as types from '../messages/genreMessages';
 
-export const listGenres = (keyword = '', pageNumber = '') => async (dispatch) => {
+export const listGenres = (pageNumber = '') => async (dispatch) => {
     try {
         dispatch({ type: types.GENRE_LIST_REQUEST });
 
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            }
+        };
+
         const { data } = await axios.get(
-            `/api/genres?keyword=${keyword}&pageNumber=${pageNumber}`
+            process.env.REACT_APP_API_URL+`/api/genre?pageNumber=${pageNumber}`, config
         );
 
         dispatch({
@@ -39,7 +47,7 @@ export const createGenre = () => async (dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.post(`/api/genres`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/genres`, {}, config);
 
         dispatch({
             type: types.GENRE_CREATE_SUCCESS,
@@ -64,7 +72,7 @@ export const detailGenre = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.GENRE_DETAILS_REQUEST });
 
-        const { data } = await axios.get(`/api/genres/${id}`);
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/genres/${id}`);
 
         dispatch({
             type: types.GENRE_DETAILS_SUCCESS,
@@ -97,7 +105,7 @@ export const updateGenre = (genre) => async (dispatch, getState) => {
         };
 
         const { data } = await axios.put(
-            `/api/genres/${genre._id}`,
+            process.env.REACT_APP_API_URL+`/api/genres/${genre._id}`,
             genre,
             config
         );
@@ -140,7 +148,7 @@ export const deleteGenre = (id) => async (dispatch, getState) => {
             },
         };
 
-        await axios.delete(`/api/genres/${id}`, config);
+        await axios.delete(process.env.REACT_APP_API_URL+`/api/genres/${id}`, config);
 
         dispatch({
             type: types.GENRE_DELETE_SUCCESS,

@@ -35,30 +35,30 @@ const useStyles = makeStyles((theme) => ({
 const UserList = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
+    
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+    
+    const userDelete = useSelector((state) => state.userDelete)
+    const { success: successDelete } = userDelete
+    
     const userList = useSelector((state) => state.userList)
     const { loading, error, users } = userList
 
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
-    const userDelete = useSelector((state) => state.userDelete)
-    const { success: successDelete } = userDelete
-
-    // useEffect(() => {
-    //     if (userInfo && userInfo.isAdmin) {
-    //         dispatch(listUsers())
-    //     } else {
-    //         navigate('/login')
-    //     }
-    // }, [dispatch, successDelete, userInfo])
+    useEffect(() => {
+        if(userInfo){
+            dispatch(listUsers())
+        }else{
+            navigate('/login')
+        }
+    }, [dispatch, userInfo])
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure')) {
             dispatch(deleteUser(id))
         }
     }
-
+    
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
@@ -67,8 +67,8 @@ const UserList = () => {
             {loading ? (
                 <Loader />
             ) : error ? (
-                <Message variant='danger'>{error}</Message>
-            ) : (
+                <Message variant='error'>{error}</Message>
+            ) : users.length === 0 ? <Loader/> : (
                 <Table size='small'>
                     <TableHead>
                         <TableRow>
@@ -80,7 +80,7 @@ const UserList = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {users.map((user) => (
+                        {users.data.map((user) => (
                             <TableRow key={user._id}>
                                 <TableCell>
                                     <Avatar alt="Avatar User" src={user.avatar} />
@@ -88,14 +88,14 @@ const UserList = () => {
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
-                                    {user.isAdmin ? (
+                                    {user.role ? (
                                         <CheckCircleIcon />
                                     ) : (
                                         <HighlightOffIcon />
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    <Link href={`/users/${user._id}/edit`} onClick={(e) => e.preventDefault}>
+                                    <Link href={`/users/${user.user_id}/edit`} onClick={(e) => e.preventDefault}>
                                         <Button variant="contained" color="secondary" href="">
                                             <EditIcon />
                                         </Button>

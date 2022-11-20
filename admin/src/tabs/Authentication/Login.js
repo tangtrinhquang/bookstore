@@ -71,7 +71,7 @@ const Login = () => {
                 <Typography component="h1" variant="h5">
                     Sign in
                     </Typography>
-                {error && <Message variant='danger'>{error}</Message>}
+                {/* {error && <Message variant='danger'>{error}</Message>} */}
                 {loading && <Loader />}
                 <form className={classes.form} onSubmit={submitHandler}>
                     <TextField

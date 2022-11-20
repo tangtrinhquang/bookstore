@@ -88,7 +88,7 @@ const BookEdit = () => {
             dispatch({ type: BOOK_UPDATE_RESET })
             navigate('/books');
         } else {
-            if (!book.name || book._id !== bookId) {
+            if (Object.keys(book).length === 0) {
                 dispatch(detailBook(bookId));
             } else {
                 setName(book.name);
@@ -168,12 +168,12 @@ const BookEdit = () => {
                     Edit book
                 </Typography>
                 {loadingUpdate && <Loader />}
-                {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+                {errorUpdate && <Message variant='error'>{errorUpdate}</Message>}
                 {loading ? (
                     <Loader />
                 ) : error ? (
-                    <Message variant='danger'>{error}</Message>
-                ) : (
+                    <Message variant='error'>{error}</Message>
+                ) : Object.keys(book).length === 0 ? <Loader/> : (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -184,7 +184,7 @@ const BookEdit = () => {
                                     id="name"
                                     label="Enter Name"
                                     name="name"
-                                    value={name}
+                                    value={book.data.name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
@@ -197,21 +197,8 @@ const BookEdit = () => {
                                     id="price"
                                     label="Enter Price"
                                     name="price"
-                                    value={price}
+                                    value={book.data.price}
                                     onChange={(e) => setPrice(e.target.value)}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    type="number"
-                                    required
-                                    fullWidth
-                                    id="sales"
-                                    label="Enter Sales Books"
-                                    name="sales"
-                                    value={sales}
-                                    onChange={(e) => setSales(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -222,7 +209,7 @@ const BookEdit = () => {
                                     id="image"
                                     label="Enter Image Url"
                                     name="image"
-                                    value={image}
+                                    value={book.data.image}
                                     onChange={(e) => setImage(e.target.value)}
                                 />
                                 <input
@@ -247,20 +234,8 @@ const BookEdit = () => {
                                     id="author"
                                     label="Enter Author"
                                     name="author"
-                                    value={author}
+                                    value={book.data.author_id}
                                     onChange={(e) => setAuthor(e.target.value)}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    id="language"
-                                    label="Enter Language"
-                                    name="language"
-                                    value={language}
-                                    onChange={(e) => setLanguage(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -272,7 +247,7 @@ const BookEdit = () => {
                                     id="pages"
                                     label="Enter Pages"
                                     name="pages"
-                                    value={pages}
+                                    value={book.data.page}
                                     onChange={(e) => setPages(e.target.value)}
                                 />
                             </Grid>
@@ -281,7 +256,7 @@ const BookEdit = () => {
                                     label="Select Genres"
                                     variant="outlined"
                                     id="genres"
-                                    value={genres}
+                                    value={book.data.genre_id}
                                     fullWidth
                                     onChange={(e) => setGenres(e.target.value)}
                                 >
@@ -290,7 +265,7 @@ const BookEdit = () => {
                                     ))}
                                 </Select>
                             </Grid>
-                            <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
                                     required
@@ -301,7 +276,7 @@ const BookEdit = () => {
                                     value={publishedAt}
                                     onChange={(e) => setPublishedAt(e.target.value)}
                                 />
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
@@ -310,7 +285,7 @@ const BookEdit = () => {
                                     id="publisher"
                                     label="Enter Publisher"
                                     name="publisher"
-                                    value={publisher}
+                                    value={book.data.publisher_id}
                                     onChange={(e) => setPublisher(e.target.value)}
                                 />
                             </Grid>
@@ -337,7 +312,7 @@ const BookEdit = () => {
                                     id="description"
                                     label="Enter Description"
                                     name="description"
-                                    value={description}
+                                    value={book.data.description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </Grid>

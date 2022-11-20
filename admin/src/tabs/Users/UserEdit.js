@@ -47,7 +47,9 @@ const UserEdit = () => {
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
-    const [isAdmin, setIsAdmin] = useState(false)
+    const [phone, setPhone] = useState('')
+    const [address, setAddress] = useState('')
+    // const [isAdmin, setIsAdmin] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -66,24 +68,28 @@ const UserEdit = () => {
             dispatch({ type: USER_UPDATE_RESET })
             navigate('/users')
         } else {
-            if (!user.name || user._id !== userId) {
+            if (Object.keys(user).length === 0) {
                 dispatch(getUserDetail(userId))
             } else {
-                setName(user.name)
-                setEmail(user.email)
-                setIsAdmin(user.isAdmin)
+                setName(user.data.name)
+                setEmail(user.data.email)
+                setPhone(user.data.phone)
+                setAddress(user.data.address)
+                // setIsAdmin(user.isAdmin)
             }
         }
     }, [dispatch, userId, user, successUpdate])
 
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(updateUser({ _id: userId, name, email, isAdmin }))
+        dispatch(updateUser({ user_id: userId, name: name, email: email, phone: phone, address: address }))
     }
+
+    console.log(email);
 
     return (
         <MainLayout>
-            <Link to='/books' className='btn btn-light my-3'>
+            <Link href='/users' className='btn btn-light my-3'>
                 Go Back
             </Link>
             <div className={classes.paper}>
@@ -94,12 +100,12 @@ const UserEdit = () => {
                     Edit User
                 </Typography>
                 {loadingUpdate && <Loader />}
-                {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+                {errorUpdate && <Message variant='error'>{errorUpdate}</Message>}
                 {loading ? (
                     <Loader />
                 ) : error ? (
-                    <Message variant='danger'>{error}</Message>
-                ) : (
+                    <Message variant='error'>{error}</Message>
+                ) : Object.keys(user).length === 0 ? <Loader/> : (
                     <form onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -110,7 +116,7 @@ const UserEdit = () => {
                                     id="name"
                                     label="Enter Name"
                                     name="name"
-                                    value={name}
+                                    defaultValue={user.data.name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
@@ -122,17 +128,41 @@ const UserEdit = () => {
                                     id="email"
                                     label="Enter Email"
                                     name="email"
-                                    value={email}
+                                    defaultValue={user.data.email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="phone"
+                                    label="Enter Phone Number"
+                                    name="phone"
+                                    defaultValue={user.data.phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="address"
+                                    label="Enter Address"
+                                    name="address"
+                                    defaultValue={user.data.address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                />
+                            </Grid>
+                            {/* <Grid item xs={12}>
                                 <Checkbox
                                     checked={isAdmin}
                                     onChange={(e) => setIsAdmin(e.target.checked)}
                                     inputProps={{ 'aria-label': 'primary checkbox' }}
                                 />
-                            </Grid>
+                            </Grid> */}
                             <Button
                                 type="submit"
                                 fullWidth

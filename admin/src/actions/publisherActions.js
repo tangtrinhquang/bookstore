@@ -2,12 +2,20 @@ import axios from 'axios';
 import { logout } from './userActions';
 import * as types from '../messages/publisherMessages';
 
-export const listPublisher = (keyword = '', pageNumber = '') => async (dispatch) => {
+export const listPublisher = ( pageNumber = '') => async (dispatch) => {
     try {
         dispatch({ type: types.PUBLISHER_LIST_REQUEST });
 
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            }
+        };
+
         const { data } = await axios.get(
-            `/api/publishers?keyword=${keyword}&pageNumber=${pageNumber}`
+            process.env.REACT_APP_API_URL+`/api/publisher?pageNumber=${pageNumber}`, config
         );
 
         dispatch({
@@ -39,7 +47,7 @@ export const createPublisher = () => async (dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.post(`/api/publishers`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/publishers`, {}, config);
 
         dispatch({
             type: types.PUBLISHER_CREATE_SUCCESS,
@@ -64,7 +72,7 @@ export const detailPublisher = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.PUBLISHER_DETAILS_REQUEST });
 
-        const { data } = await axios.get(`/api/publishers/${id}`);
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/publishers/${id}`);
 
         dispatch({
             type: types.PUBLISHER_DETAILS_SUCCESS,
@@ -97,7 +105,7 @@ export const updatePublisher = (publisher) => async (dispatch, getState) => {
         };
 
         const { data } = await axios.put(
-            `/api/publishers/${publisher._id}`,
+            process.env.REACT_APP_API_URL+`/api/publishers/${publisher._id}`,
             publisher,
             config
         );
@@ -140,7 +148,7 @@ export const deletePublisher = (id) => async (dispatch, getState) => {
             },
         };
 
-        await axios.delete(`/api/publishers/${id}`, config);
+        await axios.delete(process.env.REACT_APP_API_URL+`/api/publishers/${id}`, config);
 
         dispatch({
             type: types.PUBLISHER_DELETE_SUCCESS,

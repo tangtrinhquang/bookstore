@@ -2,12 +2,20 @@ import axios from 'axios';
 import { logout } from './userActions';
 import * as types from '../messages/authorMessages';
 
-export const listAuthors = (keyword = '', pageNumber = '') => async (dispatch) => {
+export const listAuthors = ( pageNumber = '') => async (dispatch) => {
     try {
         dispatch({ type: types.AUTHOR_LIST_REQUEST });
 
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            }
+        };
+
         const { data } = await axios.get(
-            `/api/authors?keyword=${keyword}&pageNumber=${pageNumber}`
+            process.env.REACT_APP_API_URL+`/api/author?pageNumber=${pageNumber}`, config
         );
 
         dispatch({
@@ -29,7 +37,7 @@ export const detailAuthor = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.AUTHOR_DETAILS_REQUEST });
 
-        const { data } = await axios.get(`/api/authors/${id}`);
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/author/${id}`);
 
         dispatch({
             type: types.AUTHOR_DETAILS_SUCCESS,
@@ -50,17 +58,15 @@ export const createAuthor = () => async (dispatch, getState) => {
     try {
         dispatch({ type: types.AUTHOR_CREATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             }
         };
 
-        const { data } = await axios.post(`/api/authors`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/author`, {}, config);
 
         dispatch({
             type: types.AUTHOR_CREATE_SUCCESS,
@@ -85,19 +91,17 @@ export const updateAuthor = (author) => async (dispatch, getState) => {
     try {
         dispatch({ type: types.AUTHOR_UPDATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
-        const { data } = await axios.put(
-            `/api/authors/${author._id}`,
+        const { data } = await axios.put( //post
+        process.env.REACT_APP_API_URL+`/api/author/${author._id}`,
             author,
             config
         );
@@ -130,17 +134,15 @@ export const deleteAuthor = (id) => async (dispatch, getState) => {
     try {
         dispatch({ type: types.AUTHOR_DELETE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
-        await axios.delete(`/api/authors/${id}`, config);
+        await axios.delete(process.env.REACT_APP_API_URL+`/api/author/${id}`, config);
 
         dispatch({
             type: types.AUTHOR_DELETE_SUCCESS,

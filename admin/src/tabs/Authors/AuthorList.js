@@ -74,25 +74,25 @@ const AuthorList = () => {
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
-    // useEffect(() => {
-    //     dispatch({ type: AUTHOR_CREATE_RESET });
+    useEffect(() => {
+        dispatch({ type: AUTHOR_CREATE_RESET });
 
-    //     if (!userInfo || !userInfo.isAdmin) {
-    //         navigate('/login');
-    //     }
-    //     if (successCreate) {
-    //         navigate(`/authors/${createdAuthor._id}/edit`);
-    //     } else {
-    //         dispatch(listAuthors('', pageNumber));
-    //     }
-    // }, [
-    //     dispatch,
-    //     userInfo,
-    //     successCreate,
-    //     successDelete,
-    //     createdAuthor,
-    //     pageNumber,
-    // ]);
+        if (!userInfo ) {
+            navigate('/login');
+        }
+        if (successCreate) {
+            navigate(`/author/${createdAuthor._id}/edit`);
+        } else {
+            dispatch(listAuthors('', pageNumber));
+        }
+    }, [
+        dispatch,
+        userInfo,
+        successCreate,
+        successDelete,
+        createdAuthor,
+        pageNumber,
+    ]);
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure')) {
@@ -113,13 +113,13 @@ const AuthorList = () => {
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         {loadingDelete && <Loader />}
-                        {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+                        {errorDelete && <Message variant='error'>{errorDelete}</Message>}
                         {loadingCreate && <Loader />}
-                        {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
+                        {errorCreate && <Message variant='error'>{errorCreate}</Message>}
                         {loading ? (
                             <Loader />
                         ) : error ? (
-                            <Message variant='danger'>{error}</Message>
+                            <Message variant='error'>{error}</Message>
                         ) : (
                             <>
                                 <Table size='small'>
@@ -135,26 +135,27 @@ const AuthorList = () => {
                                     </TableHead>
                                     <TableBody>
                                         {authors.map((author, index) => (
-                                            <TableRow key={author._id}>
+                                            <TableRow key={author.author_id}>
                                                 <TableCell>{index + 1 + Number(pageNumber-1)*12}</TableCell>
                                                 <TableCell>
                                                     <img
-                                                        src={author.portrait}
+                                                        src={process.env.REACT_APP_API_URL+"/storage/"+author.portrait}
                                                         alt="Paella dish"
-                                                        width="80"
+                                                        width="115"
+                                                        height="129"
                                                     />
                                                 </TableCell>
                                                 <TableCell>{author.name}</TableCell>
-                                                <TableCell>{author.about}</TableCell>
+                                                <TableCell>{author.description}</TableCell>
                                                 <TableCell>
-                                                    <Link href={`/authors/${author._id}/edit`} onClick={(e) => e.preventDefault}>
+                                                    <Link href={`/authors/${author.author_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button variant="contained" color="secondary" href="">
                                                             <EditIcon />
                                                         </Button>
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(author._id)}>
+                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(author.author_id)}>
                                                         <DeleteIcon />
                                                     </Button>
                                                 </TableCell>

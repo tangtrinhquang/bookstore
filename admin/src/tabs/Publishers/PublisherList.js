@@ -17,11 +17,11 @@ import Paginate from '../../components/Pagination';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import {
-    listPublishers,
+    listPublisher,
     deletePublisher,
     createPublisher,
 } from '../../actions/publisherActions';
-import { AUTHOR_CREATE_RESET } from '../../messages/publisherMessages';
+import { PUBLISHER_CREATE_RESET } from '../../messages/publisherMessages';
 import Typography from '@material-ui/core/Typography';
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -74,25 +74,25 @@ const PublisherList = () => {
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
-    // useEffect(() => {
-    //     dispatch({ type: AUTHOR_CREATE_RESET });
+    useEffect(() => {
+        dispatch({ type: PUBLISHER_CREATE_RESET });
 
-    //     if (!userInfo || !userInfo.isAdmin) {
-    //         navigate('/login');
-    //     }
-    //     if (successCreate) {
-    //         navigate(`/publishers/${createdPublisher._id}/edit`);
-    //     } else {
-    //         dispatch(listPublishers('', pageNumber));
-    //     }
-    // }, [
-    //     dispatch,
-    //     userInfo,
-    //     successCreate,
-    //     successDelete,
-    //     createdPublisher,
-    //     pageNumber,
-    // ]);
+        if (!userInfo) {
+            navigate('/login');
+        }
+        if (successCreate) {
+            navigate(`/publisher/${createdPublisher.publisher_id}/edit`);
+        } else {
+            dispatch(listPublisher('', pageNumber));
+        }
+    }, [
+        dispatch,
+        userInfo,
+        successCreate,
+        successDelete,
+        createdPublisher,
+        pageNumber,
+    ]);
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure?')) {
@@ -113,13 +113,13 @@ const PublisherList = () => {
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         {loadingDelete && <Loader />}
-                        {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+                        {errorDelete && <Message variant='error'>{errorDelete}</Message>}
                         {loadingCreate && <Loader />}
-                        {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
+                        {errorCreate && <Message variant='error'>{errorCreate}</Message>}
                         {loading ? (
                             <Loader />
                         ) : error ? (
-                            <Message variant='danger'>{error}</Message>
+                            <Message variant='error'>{error}</Message>
                         ) : (
                             <>
                                 <Table size='small'>
@@ -135,20 +135,20 @@ const PublisherList = () => {
                                     </TableHead>
                                     <TableBody>
                                         {publishers.map((publisher, index) => (
-                                            <TableRow key={publisher._id}>
+                                            <TableRow key={publisher.publisher_id}>
                                                 <TableCell>{index + 1 + Number(pageNumber-1)*12}</TableCell>
                                                 <TableCell>{publisher.name}</TableCell>
                                                 <TableCell>{publisher.address}</TableCell>
                                                 <TableCell>{publisher.description}</TableCell>
                                                 <TableCell>
-                                                    <Link href={`/publishers/${publisher._id}/edit`} onClick={(e) => e.preventDefault}>
+                                                    <Link href={`/publisher/${publisher.publisher_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button variant="contained" color="secondary" href="">
                                                             <EditIcon />
                                                         </Button>
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(publisher._id)}>
+                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(publisher.publisher_id)}>
                                                         <DeleteIcon />
                                                     </Button>
                                                 </TableCell>

@@ -143,7 +143,7 @@ const Order = () => {
     return loading ? (
         <Loader />
     ) : error ? (
-        <Message variant='danger'>{error}</Message>
+        <Message variant='error'>{error}</Message>
     ) : (
         <MainLayout>
             <Typography component="h1" variant="h5">
@@ -203,7 +203,7 @@ const Order = () => {
                                         Delivered on {order.deliveredAt}
                                     </Message>
                                 ) : (
-                                    <Message variant='danger'>Not Delivered</Message>
+                                    <Message variant='error'>Not Delivered</Message>
                                 )}
                             </ListItem>
                         </List>
@@ -233,7 +233,7 @@ const Order = () => {
                                 {order.isPaid ? (
                                     <Message variant='success'>Paid on {order.paidAt}</Message>
                                 ) : (
-                                    <Message variant='danger'>Not Paid</Message>
+                                    <Message variant='error'>Not Paid</Message>
                                 )}
                             </ListItem>
                         </List>

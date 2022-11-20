@@ -37,6 +37,7 @@ export default function MainRoutes() {
 
                     <Route path="/books">
                         <Route index element={<BookList/>} />
+                        <Route path="add" element={<BookEdit/>} />
                         <Route path=":id/edit" element={<BookEdit/>} />
                         <Route path=":pgNumber" element={<BookList/>} />
                     </Route>
