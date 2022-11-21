@@ -83,7 +83,7 @@ const GenreList = () => {
         if (successCreate) {
             navigate(`/genre/${createdGenre._id}/edit`);
         } else {
-            dispatch(listGenres('', pageNumber));
+            dispatch(listGenres(pageNumber));
         }
     }, [
         dispatch,
@@ -107,7 +107,7 @@ const GenreList = () => {
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                GENRE LIST ({count})
+                GENRE LIST ({genres?.length})
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
@@ -139,7 +139,7 @@ const GenreList = () => {
                                                 <TableCell>{genre.name}</TableCell>
                                                 <TableCell>{genre.description}</TableCell>
                                                 <TableCell>
-                                                    <Link href={`/genre/${genre.genre_id}/edit`} onClick={(e) => e.preventDefault}>
+                                                    <Link href={`/genres/${genre.genre_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button variant="contained" color="secondary" href="">
                                                             <EditIcon />
                                                         </Button>
@@ -158,7 +158,7 @@ const GenreList = () => {
                             </>
                         )}
                         <div className={classes.createdButton}>
-                            <Button color="primary" href="#" onClick={createGenreHandler}>
+                            <Button color="primary" href="/genres/add" onClick={createGenreHandler}>
                                 <AddCircleIcon fontSize="large"/>
                             </Button>
                         </div>

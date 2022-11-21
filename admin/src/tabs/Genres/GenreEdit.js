@@ -13,8 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { detailGenre, updateGenre } from '../../actions/genreActions'
-import { GENRE_UPDATE_RESET } from '../../messages/genreMessages'
+import { detailGenre, updateGenre, createGenre } from '../../actions/genreActions'
+import { GENRE_UPDATE_RESET, GENRE_CREATE_RESET } from '../../messages/genreMessages'
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -47,9 +47,10 @@ const GenreEdit = () => {
     const { id } = useParams();
     const genreId = id;
 
+    const { add } = useParams();
+
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [uploading, setUploading] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -63,38 +64,59 @@ const GenreEdit = () => {
         success: successUpdate,
     } = genreUpdate;
 
+    const genreCreate = useSelector(state => state.genreCreate);
+    const {
+        loading: loadingCreate,
+        error: errorCreate,
+        success: successCreate,
+    } = genreCreate;
+
     useEffect(() => {
         if(successUpdate) {
             dispatch({ type: GENRE_UPDATE_RESET });
             navigate('/genres');
+        } else { if(successCreate) {
+            dispatch({ type: GENRE_CREATE_RESET });
+            navigate('/genres');
         } else {
-            if (!genre.name || genre._id !== genreId) {
+            if (add != 'add') {
+            if (Object.keys(genre).length === 0) {
                 dispatch(detailGenre(genreId));
             } else {
-                setName(genre.name);
-                setDescription(genre.description);
+                setName(genre.data.name);
+                setDescription(genre.data.description);
             }
         }
+    }
+}
     }, [        
         dispatch,
         genreId,
         genre,
-        successUpdate
+        successUpdate,
+        successCreate
     ]);
 
     const submitHandler = (e) => {
         e.preventDefault();
 
-        dispatch(updateGenre({
-            _id: genreId,
-            name,
-            description,
+        if(add != 'add') {
+            dispatch(updateGenre({
+                genre_id: genreId,
+                name: name,
+                description: description,
+            }));
+        }else{
+            dispatch(createGenre({
+                name: name,
+                description: description,
         }));
+        }
     };
 
     return (
         <MainLayout>
-            <Link to='/genres' className='btn btn-light my-3'>
+            <Link href='/genres' className='btn btn-light my-3'>
                 Go Back
             </Link>
             <div className={classes.paper}>
@@ -102,7 +124,7 @@ const GenreEdit = () => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Edit Genre
+                    Genre Details
                 </Typography>
                 {loadingUpdate && <Loader />}
                 {errorUpdate && <Message variant='error'>{errorUpdate}</Message>}
@@ -110,7 +132,7 @@ const GenreEdit = () => {
                     <Loader />
                 ) : error ? (
                     <Message variant='error'>{error}</Message>
-                ) : (
+                ) : add === 'add' ? (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -119,9 +141,9 @@ const GenreEdit = () => {
                                     required
                                     fullWidth
                                     id="name"
-                                    label="Enter Name"
+                                    label="Genre Name"
                                     name="name"
-                                    value={name}
+                                    defaultValue={""}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
@@ -130,10 +152,50 @@ const GenreEdit = () => {
                                     variant="outlined"
                                     required
                                     fullWidth
+                                    minRows={4}
                                     id="description"
-                                    label="Enter Desc"
+                                    label="Description"
                                     name="description"
-                                    value={description}
+                                    defaultValue={""}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </Grid>         
+                        </Grid>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                ) : Object.keys(genre).length === 0 ? <Loader/> : (
+                    <form className={classes.form} onSubmit={submitHandler}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="name"
+                                    label="Genre Name"
+                                    name="name"
+                                    defaultValue={genre.data.name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    minRows={4}
+                                    id="description"
+                                    label="Description"
+                                    name="description"
+                                    defaultValue={genre.data.description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </Grid>         

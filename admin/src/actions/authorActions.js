@@ -37,7 +37,15 @@ export const detailAuthor = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.AUTHOR_DETAILS_REQUEST });
 
-        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/author/${id}`);
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            }
+        };
+
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/author/${id}`, config);
 
         dispatch({
             type: types.AUTHOR_DETAILS_SUCCESS,
@@ -87,7 +95,7 @@ export const createAuthor = () => async (dispatch, getState) => {
     };
 };
 
-export const updateAuthor = (author) => async (dispatch, getState) => {
+export const updateAuthor = (author) => async (dispatch) => {
     try {
         dispatch({ type: types.AUTHOR_UPDATE_REQUEST });
 
@@ -101,7 +109,7 @@ export const updateAuthor = (author) => async (dispatch, getState) => {
         };
 
         const { data } = await axios.put( //post
-        process.env.REACT_APP_API_URL+`/api/author/${author._id}`,
+        process.env.REACT_APP_API_URL+`/api/author/${author.author_id}`,
             author,
             config
         );

@@ -37,7 +37,7 @@ export default function MainRoutes() {
 
                     <Route path="/books">
                         <Route index element={<BookList/>} />
-                        <Route path="add" element={<BookEdit/>} />
+                        <Route path=":add" element={<BookEdit/>} />
                         <Route path=":id/edit" element={<BookEdit/>} />
                         <Route path=":pgNumber" element={<BookList/>} />
                     </Route>
@@ -49,18 +49,21 @@ export default function MainRoutes() {
 
                     <Route path='/authors'>
                         <Route index element={<AuthorList/>}/>
+                        <Route path=":add" element={<AuthorEdit/>} />
                         <Route path=':id/edit' element={<AuthorEdit/>} />
                         <Route path=":pgNumber" element={<AuthorList/>} />
                     </Route>
 
                     <Route path='/genres'>
                         <Route index element={<GenreList/>}/>
+                        <Route path=":add" element={<GenreEdit/>} />
                         <Route path=':id/edit' element={<GenreEdit/>} />
                         <Route path=":pgNumber" element={<GenreList/>} />
                     </Route>
 
                     <Route path='/publishers'>
                         <Route index element={<PublisherList/>}/>
+                        <Route path=":add" element={<PublisherEdit/>} />
                         <Route path=':id/edit' element={<PublisherEdit/>} />
                         <Route path=":pgNumber" element={<PublisherList/>} />
                     </Route>

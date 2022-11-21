@@ -33,21 +33,19 @@ export const listGenres = (pageNumber = '') => async (dispatch) => {
     };
 };
 
-export const createGenre = () => async (dispatch, getState) => {
+export const createGenre = (genre) => async (dispatch) => {
     try {
         dispatch({ type: types.GENRE_CREATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
-            }
+                Authorization: `Bearer ${userData.data.access_token}`,
+            },
         };
 
-        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/genres`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/genre`, genre, config);
 
         dispatch({
             type: types.GENRE_CREATE_SUCCESS,
@@ -72,7 +70,15 @@ export const detailGenre = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.GENRE_DETAILS_REQUEST });
 
-        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/genres/${id}`);
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            },
+        };
+
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/genre/${id}`, config);
 
         dispatch({
             type: types.GENRE_DETAILS_SUCCESS,
@@ -93,19 +99,16 @@ export const updateGenre = (genre) => async (dispatch, getState) => {
     try {
         dispatch({ type: types.GENRE_UPDATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
         const { data } = await axios.put(
-            process.env.REACT_APP_API_URL+`/api/genres/${genre._id}`,
+            process.env.REACT_APP_API_URL+`/api/genre/${genre.genre_id}`,
             genre,
             config
         );
@@ -134,21 +137,19 @@ export const updateGenre = (genre) => async (dispatch, getState) => {
     };
 };
 
-export const deleteGenre = (id) => async (dispatch, getState) => {
+export const deleteGenre = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.GENRE_DELETE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
-        await axios.delete(process.env.REACT_APP_API_URL+`/api/genres/${id}`, config);
+        await axios.delete(process.env.REACT_APP_API_URL+`/api/genre/${id}`, config);
 
         dispatch({
             type: types.GENRE_DELETE_SUCCESS,

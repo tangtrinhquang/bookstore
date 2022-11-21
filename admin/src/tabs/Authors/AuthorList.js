@@ -146,7 +146,7 @@ const AuthorList = () => {
                                                     />
                                                 </TableCell>
                                                 <TableCell>{author.name}</TableCell>
-                                                <TableCell>{author.description}</TableCell>
+                                                <TableCell>{author.description.length > 420 ? author.description.substr(0, author.description.substr(0, 420).lastIndexOf(' '))+'...' : author.description}</TableCell>
                                                 <TableCell>
                                                     <Link href={`/authors/${author.author_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button variant="contained" color="secondary" href="">
@@ -167,7 +167,7 @@ const AuthorList = () => {
                             </>
                         )}
                         <div className={classes.createdButton}>
-                            <Button color="primary" href="#" onClick={createAuthorHandler}>
+                            <Button color="primary" href="/authors/add" onClick={createAuthorHandler}>
                                 <AddCircleIcon fontSize="large"/>
                             </Button>
                         </div>

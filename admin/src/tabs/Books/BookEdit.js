@@ -15,18 +15,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { detailBook, updateBook } from '../../actions/bookActions'
+import { getDetailBook, updateBook } from '../../actions/bookActions'
 import { BOOK_UPDATE_RESET } from '../../messages/bookMessages'
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
-
-const genresType = [
-    { value: 'Adventure' },
-    { value: 'Fantasy' },
-    { value: 'Mystery' },
-    { value: 'Romance' },
-    { value: 'Sci-Fi' },
-];
+import { InputLabel } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -56,25 +49,26 @@ const BookEdit = () => {
     const classes = useStyles();
     const { id } = useParams()
     const bookId = id;
+    const { pgNumber } = useParams();
+    const pageNumber = pgNumber || 1;
 
     const [name, setName] = useState('');
     const [price, setPrice] = useState(0);
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState();
     const [author, setAuthor] = useState('');
-    const [genres, setGenres] = useState('');
-    const [language, setLanguage] = useState('');
-    const [publishedAt, setPublishedAt] = useState('');
+    const [genre, setGenre] = useState('');
+    // const [publishedAt, setPublishedAt] = useState('');
     const [publisher, setPublisher] = useState('');
     const [pages, setPages] = useState(0);
-    const [sales, setSales] = useState(0);
-    const [countInStock, setCountInStock] = useState(0);
+    // const [sales, setSales] = useState(0);
+    // const [countInStock, setCountInStock] = useState(0);
     const [description, setDescription] = useState('');
     const [uploading, setUploading] = useState(false);
 
     const dispatch = useDispatch();
 
     const bookDetail = useSelector(state => state.bookDetail);
-    const { loading, error, book } = bookDetail;
+    const { loading, error, book, authors, genres, publishers } = bookDetail;
 
     const bookUpdate = useSelector(state => state.bookUpdate);
     const {
@@ -89,19 +83,18 @@ const BookEdit = () => {
             navigate('/books');
         } else {
             if (Object.keys(book).length === 0) {
-                dispatch(detailBook(bookId));
+                dispatch(getDetailBook(bookId)); 
             } else {
                 setName(book.name);
                 setPrice(book.price);
                 setImage(book.image);
-                setAuthor(book.author);
-                setGenres(book.genres);
-                setLanguage(book.language);
-                setPages(book.pages);
-                setSales(book.sales);
-                setPublishedAt(book.publishedAt);
-                setPublisher(book.publisher);
-                setCountInStock(book.countInStock);
+                setAuthor(book.author_id);
+                setGenre(book.genre_id);
+                setPages(book.page);
+                // setSales(book.sales);
+                // setPublishedAt(book.publishedAt);
+                setPublisher(book.publisher_id);
+                // setCountInStock(book.countInStock);
                 setDescription(book.description)
             }
         }
@@ -109,25 +102,36 @@ const BookEdit = () => {
         dispatch,
         bookId,
         book,
+        genre,
+        publishers,
         successUpdate
     ]);
 
+    const [imgName, setImgName] = useState();
+    const [imgSrc, setImgSrc] = useState();
+    useEffect(() => {
+        setImgSrc(process.env.REACT_APP_API_URL+"/storage/"+book?.image)
+        setImgName(book?.image)
+    }, [
+        book?.image
+    ]) 
+
     const uploadFileHandler = async (e) => {
         const file = e.target.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
+        const reader = new FileReader();
+
         setUploading(true);
 
+        reader.onloadend = () => {
+            setImgSrc(reader.result);
+            setImgName(file.name);
+            console.log(reader.result);
+        }
+
+        reader.readAsDataURL(file);
+
         try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            };
-
-            const { data } = await axios.post(`/api/upload`, formData, config);
-
-            setImage(data);
+            setImage(file);
             setUploading(false);
         } catch (error) {
             console.error(error);
@@ -139,25 +143,21 @@ const BookEdit = () => {
         e.preventDefault();
 
         dispatch(updateBook({
-            _id: bookId,
-            name,
-            price,
-            image,
-            author,
-            pages,
-            sales,
-            genres,
-            language,
-            publishedAt,
-            publisher,
-            countInStock,
-            description,
+            book_id: bookId,
+            name: name,
+            price: price,
+            image: image,
+            author_id: author,
+            page: pages,
+            genre_id: genre,
+            publisher_id: publisher,
+            description: description,
         }));
     };
 
     return (
         <MainLayout>
-            <Link to='/books' className='btn btn-light my-3'>
+            <Link href='/books' className='btn btn-light my-3'>
                 Go Back
             </Link>
             <div className={classes.paper}>
@@ -165,7 +165,7 @@ const BookEdit = () => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Edit book
+                    Book Details
                 </Typography>
                 {loadingUpdate && <Loader />}
                 {errorUpdate && <Message variant='error'>{errorUpdate}</Message>}
@@ -173,7 +173,7 @@ const BookEdit = () => {
                     <Loader />
                 ) : error ? (
                     <Message variant='error'>{error}</Message>
-                ) : Object.keys(book).length === 0 ? <Loader/> : (
+                ) : Object.keys(book).length === 0 || genres.length === 0 || publishers.length === 0 ? <Loader/> : (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -182,9 +182,9 @@ const BookEdit = () => {
                                     required
                                     fullWidth
                                     id="name"
-                                    label="Enter Name"
+                                    label="Book Name"
                                     name="name"
-                                    value={book.data.name}
+                                    defaultValue={book.name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
@@ -197,20 +197,20 @@ const BookEdit = () => {
                                     id="price"
                                     label="Enter Price"
                                     name="price"
-                                    value={book.data.price}
+                                    defaultValue={book.price}
                                     onChange={(e) => setPrice(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
+                                    disabled
                                     required
                                     fullWidth
                                     id="image"
-                                    label="Enter Image Url"
+                                    label="Cover Art"
                                     name="image"
-                                    value={book.data.image}
-                                    onChange={(e) => setImage(e.target.value)}
+                                    value={imgName}
                                 />
                                 <input
                                     accept="image/*"
@@ -219,6 +219,12 @@ const BookEdit = () => {
                                     type="file"
                                     onChange={uploadFileHandler}
                                 />
+                                <img style={{margin: "5px"}}
+                                    id="book-img"
+                                    src={imgSrc}
+                                    alt=""
+                                    width="25%"
+                                /> 
                                 <label htmlFor="icon-button-file">
                                     <IconButton color="primary" aria-label="upload picture" component="span">
                                         <PhotoCamera />
@@ -227,16 +233,20 @@ const BookEdit = () => {
                                 {uploading && <Loader />}
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
+                                <InputLabel id='author-label'>Select Author</InputLabel>
+                                <Select
+                                    labelId='author-label'
+                                    label="Select Auhor"
                                     variant="outlined"
-                                    required
-                                    fullWidth
                                     id="author"
-                                    label="Enter Author"
-                                    name="author"
-                                    value={book.data.author_id}
+                                    value={book.author_id}
+                                    fullWidth
                                     onChange={(e) => setAuthor(e.target.value)}
-                                />
+                                >
+                                    {authors.map((author, index) => (
+                                        <MenuItem key={index} value={author.author_id}>{author.name}</MenuItem>
+                                    ))}
+                                </Select>
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
@@ -247,21 +257,23 @@ const BookEdit = () => {
                                     id="pages"
                                     label="Enter Pages"
                                     name="pages"
-                                    value={book.data.page}
+                                    defaultValue={book.page}
                                     onChange={(e) => setPages(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
+                            <InputLabel id='genre-label'>Select Genre</InputLabel>
                                 <Select
-                                    label="Select Genres"
+                                    labelId='genre-label'
+                                    label="Select Genre"
                                     variant="outlined"
                                     id="genres"
-                                    value={book.data.genre_id}
+                                    value={book.genre_id}
                                     fullWidth
-                                    onChange={(e) => setGenres(e.target.value)}
+                                    onChange={(e) => setGenre(e.target.value)}
                                 >
-                                    {genresType.map((genreType, index) => (
-                                        <MenuItem key={index} value={genreType.value}>{genreType.value}</MenuItem>
+                                    {genres.map((genreType, index) => (
+                                        <MenuItem key={index} value={genreType.genre_id}>{genreType.name}</MenuItem>
                                     ))}
                                 </Select>
                             </Grid>
@@ -278,18 +290,22 @@ const BookEdit = () => {
                                 />
                             </Grid> */}
                             <Grid item xs={12}>
-                                <TextField
+                            <InputLabel id='publisher-label'>Select Publisher</InputLabel>
+                                <Select
+                                    labelId='publisher-label'
+                                    label="Select Publisher"
                                     variant="outlined"
-                                    required
+                                    id="publishers"
+                                    value={book.publisher_id}
                                     fullWidth
-                                    id="publisher"
-                                    label="Enter Publisher"
-                                    name="publisher"
-                                    value={book.data.publisher_id}
                                     onChange={(e) => setPublisher(e.target.value)}
-                                />
+                                >
+                                    {publishers.map((publisher, index) => (
+                                        <MenuItem key={index} value={publisher.publisher_id}>{publisher.name}</MenuItem>
+                                    ))}
+                                </Select>
                             </Grid>
-                            <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
                                     type="number"
@@ -301,18 +317,18 @@ const BookEdit = () => {
                                     value={countInStock}
                                     onChange={(e) => setCountInStock(e.target.value)}
                                 />
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
                                     required
                                     fullWidth
                                     multiline
-                                    rows={4}
+                                    minRows={4}
                                     id="description"
                                     label="Enter Description"
                                     name="description"
-                                    value={book.data.description}
+                                    defaultValue={book.description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </Grid>

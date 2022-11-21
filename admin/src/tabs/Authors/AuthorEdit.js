@@ -49,7 +49,7 @@ const AuthorEdit = () => {
 
     const [name, setName] = useState('');
     const [about, setAbout] = useState('');
-    const [portrait, setPortrait] = useState('');
+    const [portrait, setPortrait] = useState();
     const [uploading, setUploading] = useState(false);
 
     const dispatch = useDispatch();
@@ -64,17 +64,19 @@ const AuthorEdit = () => {
         success: successUpdate,
     } = authorUpdate;
 
+console.log(author);
+
     useEffect(() => {
         if(successUpdate) {
             dispatch({ type: AUTHOR_UPDATE_RESET });
             navigate('/authors');
         } else {
-            if (!author.name || author._id !== authorId) {
+            if (Object.keys(author).length === 0) {
                 dispatch(detailAuthor(authorId));
             } else {
-                setName(author.name);
-                setAbout(author.about);
-                setPortrait(author.portrait);
+                setName(author.data.name);
+                setAbout(author.data.description);
+                setPortrait(author.data.portrait);
             }
         }
     }, [        
@@ -84,22 +86,37 @@ const AuthorEdit = () => {
         successUpdate
     ]);
 
+    const [imgName, setImgName] = useState();
+    const [imgSrc, setImgSrc] = useState();
+    useEffect(() => {
+        setImgSrc(process.env.REACT_APP_API_URL+"/storage/"+author?.data?.portrait)
+        setImgName(author?.data?.portrait)
+    }, [
+        author?.data?.portrait
+    ]) 
+
     const uploadFileHandler = async (e) => {
         const file = e.target.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
+        const reader = new FileReader();
+
         setUploading(true);
 
+        reader.onloadend = () => {
+            setImgSrc(reader.result);
+            setImgName(file.name);
+            console.log(reader.result);
+        }
+
+        reader.readAsDataURL(file);
+
         try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            };
+            // const config = {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //     },
+            // };
 
-            const { data } = await axios.post(`/api/upload`, formData, config);
-
-            setPortrait(data);
+            setPortrait(file);
             setUploading(false);
         } catch (error) {
             console.error(error);
@@ -111,16 +128,16 @@ const AuthorEdit = () => {
         e.preventDefault();
 
         dispatch(updateAuthor({
-            _id: authorId,
-            name,
-            about,
-            portrait,
+            author_id: authorId,
+            name: name,
+            about: about,
+            portrait: portrait,
         }));
     };
 
     return (
         <MainLayout>
-            <Link to='/authors' className='btn btn-light my-3'>
+            <Link href='/authors' className='btn btn-light my-3'>
                 Go Back
             </Link>
             <div className={classes.paper}>
@@ -128,7 +145,7 @@ const AuthorEdit = () => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Edit Author
+                    Author Details
                 </Typography>
                 {loadingUpdate && <Loader />}
                 {errorUpdate && <Message variant='error'>{errorUpdate}</Message>}
@@ -136,7 +153,7 @@ const AuthorEdit = () => {
                     <Loader />
                 ) : error ? (
                     <Message variant='error'>{error}</Message>
-                ) : (
+                ) : Object.keys(author).length === 0 ? <Loader/> : (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -145,22 +162,22 @@ const AuthorEdit = () => {
                                     required
                                     fullWidth
                                     id="name"
-                                    label="Enter Name"
+                                    label="Author Name"
                                     name="name"
-                                    value={name}
+                                    defaultValue={author.data.name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
+                                    disabled
                                     required
                                     fullWidth
                                     id="portrait"
-                                    label="Enter Image Url"
+                                    label="Portrait"
                                     name="portrait"
-                                    value={portrait}
-                                    onChange={(e) => setPortrait(e.target.value)}
+                                    value={imgName}
                                 />
                                 <input 
                                     accept="image/*" 
@@ -169,6 +186,12 @@ const AuthorEdit = () => {
                                     type="file" 
                                     onChange={uploadFileHandler}
                                 />
+                                <img style={{margin: "5px"}}
+                                    id="book-img"
+                                    src={imgSrc}
+                                    alt=""
+                                    width="25%"
+                                /> 
                                 <label htmlFor="icon-button-file">
                                     <IconButton color="primary" aria-label="upload picture" component="span">
                                         <PhotoCamera />
@@ -181,10 +204,11 @@ const AuthorEdit = () => {
                                     variant="outlined"
                                     required
                                     fullWidth
+                                    minRows={4}
                                     id="about"
                                     label="Enter About"
                                     name="about"
-                                    value={about}
+                                    defaultValue={author.data.description}
                                     onChange={(e) => setAbout(e.target.value)}
                                 />
                             </Grid>         

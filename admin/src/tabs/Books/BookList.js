@@ -110,7 +110,7 @@ const BookList = () => {
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                BOOK LIST ({books.length})
+                BOOK LIST ({books?.data?.length})
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
@@ -156,11 +156,11 @@ const BookList = () => {
                                                 <TableCell>{pNames[index].data.data.name}</TableCell>
                                                 <TableCell>
                                                     <Link href={`/books/${book.book_id}/edit`} onClick={(e) => e.preventDefault}>
-                                                        <Button variant="contained" color="secondary" href="">
+                                                        <Button style={{margin: "5px"}} variant="contained" color="secondary" href="">
                                                             <EditIcon />
                                                         </Button>
                                                     </Link>
-                                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(book.book_id)}>
+                                                    <Button style={{margin: "5px"}} variant="contained" color="primary" onClick={() => deleteHandler(book.book_id)}>
                                                         <DeleteIcon />
                                                     </Button>
                                                 </TableCell>

@@ -50,15 +50,34 @@ export const listBooks = (pageNumber = '') => async (dispatch) => {
     };
 };
 
-export const detailBook = (id) => async (dispatch) => {
+export const getDetailBook = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_DETAILS_REQUEST });
 
-        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`);
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            },
+        };
+
+        const book = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`, config);
+
+        const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`, config);
+
+        const genres = await axios.get(process.env.REACT_APP_API_URL+`/api/genre`, config);
+
+        const publishers = await axios.get(process.env.REACT_APP_API_URL+`/api/publisher`, config);
+
+        const dataBook = book.data.data; 
+        const dataAuthor = authors.data.data;
+        const dataGenre = genres.data.data;
+        const dataPublisher = publishers.data.data;
 
         dispatch({
             type: types.BOOK_DETAILS_SUCCESS,
-            payload: data,
+            payload: { dataBook, dataAuthor, dataGenre, dataPublisher},
         });
     } catch (error) {
         dispatch({
@@ -75,14 +94,12 @@ export const createBook = () => async (dispatch, getState) => {
     try {
         dispatch({ type: types.BOOK_CREATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.data.access_token}`,
-            }
+                Authorization: `Bearer ${userData.data.access_token}`,
+            },
         };
 
         const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/book`, {}, config);
@@ -110,19 +127,16 @@ export const updateBook = (book) => async (dispatch, getState) => {
     try {
         dispatch({ type: types.BOOK_UPDATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.data.access_token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
-        const { data } = await axios.put(  //post
-        process.env.REACT_APP_API_URL+`/api/book/${book._id}`,
+        const { data } = await axios.put(
+        process.env.REACT_APP_API_URL+`/api/book/${book.book_id}`, 
             book,
             config
         );

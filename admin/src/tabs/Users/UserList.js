@@ -62,7 +62,7 @@ const UserList = () => {
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                USER LIST
+                USER LIST ({users?.data?.length})
             </Typography>
             {loading ? (
                 <Loader />
@@ -75,18 +75,20 @@ const UserList = () => {
                             <TableCell>AVATAR</TableCell>
                             <TableCell>NAME</TableCell>
                             <TableCell>EMAIL</TableCell>
+                            <TableCell>PHONE NUMBER</TableCell>
                             <TableCell>ADMIN</TableCell>
                             <TableCell>ACTION</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {users.data.map((user) => (
-                            <TableRow key={user._id}>
+                            <TableRow key={user.user_id}>
                                 <TableCell>
                                     <Avatar alt="Avatar User" src={user.avatar} />
                                 </TableCell>
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.phone}</TableCell>
                                 <TableCell>
                                     {user.role ? (
                                         <CheckCircleIcon />
@@ -96,11 +98,11 @@ const UserList = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Link href={`/users/${user.user_id}/edit`} onClick={(e) => e.preventDefault}>
-                                        <Button variant="contained" color="secondary" href="">
+                                        <Button style={{margin: "5px"}} variant="contained" color="secondary" href="">
                                             <EditIcon />
                                         </Button>
                                     </Link>
-                                    <Button variant="contained" color="primary" onClick={() => deleteHandler(user._id)}>
+                                    <Button style={{margin: "5px"}} variant="contained" color="primary" onClick={() => deleteHandler(user._id)}>
                                         <DeleteIcon />
                                     </Button>
                                 </TableCell>

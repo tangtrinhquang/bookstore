@@ -107,7 +107,7 @@ const PublisherList = () => {
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                PUBLISHER LIST ({count})
+                PUBLISHER LIST ({publishers?.length})
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
@@ -128,6 +128,7 @@ const PublisherList = () => {
                                             <TableCell>No.</TableCell>
                                             <TableCell>NAME</TableCell>
                                             <TableCell>ADDRESS</TableCell>
+                                            <TableCell>PHONE NUMBER</TableCell>
                                             <TableCell>DESC</TableCell>
                                             <TableCell>EDIT</TableCell>
                                             <TableCell>DELETE</TableCell>
@@ -139,9 +140,10 @@ const PublisherList = () => {
                                                 <TableCell>{index + 1 + Number(pageNumber-1)*12}</TableCell>
                                                 <TableCell>{publisher.name}</TableCell>
                                                 <TableCell>{publisher.address}</TableCell>
+                                                <TableCell>{publisher.phone}</TableCell>
                                                 <TableCell>{publisher.description}</TableCell>
                                                 <TableCell>
-                                                    <Link href={`/publisher/${publisher.publisher_id}/edit`} onClick={(e) => e.preventDefault}>
+                                                    <Link href={`/publishers/${publisher.publisher_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button variant="contained" color="secondary" href="">
                                                             <EditIcon />
                                                         </Button>
@@ -160,7 +162,7 @@ const PublisherList = () => {
                             </>
                         )}
                         <div className={classes.createdButton}>
-                            <Button color="primary" href="#" onClick={createPublisherHandler}>
+                            <Button color="primary" href="/publishers/add" onClick={createPublisherHandler}>
                                 <AddCircleIcon fontSize="large"/>
                             </Button>
                         </div>

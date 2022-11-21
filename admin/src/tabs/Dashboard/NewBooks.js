@@ -44,7 +44,7 @@ const NewBooks = () => {
                     <Divider variant="inset" component="li" />
                     {
                         books.data.slice(0, 5).map((book) => (
-                            <Link key={book._id} color="inherit" href={`/books/${book._id}/edit`}>
+                            <Link key={book.book_id} color="inherit" href={`/books/${book._id}/edit`}>
                                 <ListItem button alignItems="flex-start">
                                     <ListItemAvatar>
                                         <img alt="Image" src={process.env.REACT_APP_API_URL+"/storage/"+book.image} width="45" />

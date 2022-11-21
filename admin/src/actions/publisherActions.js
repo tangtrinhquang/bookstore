@@ -33,21 +33,19 @@ export const listPublisher = ( pageNumber = '') => async (dispatch) => {
     };
 };
 
-export const createPublisher = () => async (dispatch, getState) => {
+export const createPublisher = (publisher) => async (dispatch) => {
     try {
         dispatch({ type: types.PUBLISHER_CREATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
-            }
+                Authorization: `Bearer ${userData.data.access_token}`,
+            },
         };
 
-        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/publishers`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/publisher`, publisher, config);
 
         dispatch({
             type: types.PUBLISHER_CREATE_SUCCESS,
@@ -72,7 +70,15 @@ export const detailPublisher = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.PUBLISHER_DETAILS_REQUEST });
 
-        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/publishers/${id}`);
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userData.data.access_token}`,
+            },
+        };
+
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/publisher/${id}`, config);
 
         dispatch({
             type: types.PUBLISHER_DETAILS_SUCCESS,
@@ -89,23 +95,20 @@ export const detailPublisher = (id) => async (dispatch) => {
     };
 };
 
-export const updatePublisher = (publisher) => async (dispatch, getState) => {
+export const updatePublisher = (publisher) => async (dispatch) => {
     try {
         dispatch({ type: types.PUBLISHER_UPDATE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
         const { data } = await axios.put(
-            process.env.REACT_APP_API_URL+`/api/publishers/${publisher._id}`,
+            process.env.REACT_APP_API_URL+`/api/publisher/${publisher.publisher_id}`,
             publisher,
             config
         );
@@ -134,21 +137,19 @@ export const updatePublisher = (publisher) => async (dispatch, getState) => {
     };
 };
 
-export const deletePublisher = (id) => async (dispatch, getState) => {
+export const deletePublisher = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.PUBLISHER_DELETE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
-        await axios.delete(process.env.REACT_APP_API_URL+`/api/publishers/${id}`, config);
+        await axios.delete(process.env.REACT_APP_API_URL+`/api/publisher/${id}`, config);
 
         dispatch({
             type: types.PUBLISHER_DELETE_SUCCESS,

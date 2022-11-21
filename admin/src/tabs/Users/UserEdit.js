@@ -75,7 +75,6 @@ const UserEdit = () => {
                 setEmail(user.data.email)
                 setPhone(user.data.phone)
                 setAddress(user.data.address)
-                // setIsAdmin(user.isAdmin)
             }
         }
     }, [dispatch, userId, user, successUpdate])
@@ -84,8 +83,6 @@ const UserEdit = () => {
         e.preventDefault()
         dispatch(updateUser({ user_id: userId, name: name, email: email, phone: phone, address: address }))
     }
-
-    console.log(email);
 
     return (
         <MainLayout>
@@ -96,7 +93,7 @@ const UserEdit = () => {
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
-                <Typography component="h1" variant="h5">
+                <Typography style={{marginBottom: "25px"}} component="h1" variant="h5">
                     Edit User
                 </Typography>
                 {loadingUpdate && <Loader />}
@@ -111,13 +108,13 @@ const UserEdit = () => {
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
-                                    required
+                                    disabled
                                     fullWidth
-                                    id="name"
-                                    label="Enter Name"
-                                    name="name"
-                                    defaultValue={user.data.name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    id="email"
+                                    label="Email"
+                                    name="email"
+                                    value={user.data.email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -125,11 +122,11 @@ const UserEdit = () => {
                                     variant="outlined"
                                     required
                                     fullWidth
-                                    id="email"
-                                    label="Enter Email"
-                                    name="email"
-                                    defaultValue={user.data.email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    id="name"
+                                    label="Enter Name"
+                                    name="name"
+                                    defaultValue={user.data.name}
+                                    onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>

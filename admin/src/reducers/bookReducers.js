@@ -22,15 +22,18 @@ export const bookListReducer = (state = { books: [] }, action) => {
     };
 };
 
-export const bookDetailsReducer = (
-    state = { book: { reviews: [] } },
-    action
-) => {
+export const bookDetailsReducer = (state = { book: [] }, action ) => {
     switch (action.type) {
         case types.BOOK_DETAILS_REQUEST:
             return { ...state, loading: true };
         case types.BOOK_DETAILS_SUCCESS:
-            return { loading: false, book: action.payload };
+            return { 
+                loading: false, 
+                book: action.payload.dataBook,
+                authors: action.payload.dataAuthor,
+                genres: action.payload.dataGenre,
+                publishers: action.payload.dataPublisher,  
+            };
         case types.BOOK_DETAILS_FAIL:
             return { loading: false, error: action.payload };
         default:

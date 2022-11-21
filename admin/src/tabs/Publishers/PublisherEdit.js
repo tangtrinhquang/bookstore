@@ -13,8 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { detailPublisher, updatePublisher } from '../../actions/publisherActions'
-import { PUBLISHER_UPDATE_RESET } from '../../messages/publisherMessages'
+import { detailPublisher, updatePublisher, createPublisher } from '../../actions/publisherActions'
+import { PUBLISHER_UPDATE_RESET, PUBLISHER_CREATE_RESET } from '../../messages/publisherMessages'
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -47,10 +47,12 @@ const PublisherEdit = () => {
     const { id } = useParams();
     const publisherId = id;
 
+    const { add } = useParams();
+
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
     const [description, setDescription] = useState('');
-    const [uploading, setUploading] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -64,40 +66,66 @@ const PublisherEdit = () => {
         success: successUpdate,
     } = publisherUpdate;
 
+    const publisherCreate = useSelector(state => state.publisherCreate);
+    const {
+        loading: loadingCreate,
+        error: errorCreate,
+        success: successCreate,
+    } = publisherCreate;
+
     useEffect(() => {
         if(successUpdate) {
             dispatch({ type: PUBLISHER_UPDATE_RESET });
             navigate('/publishers');
+        } else { if(successCreate) {
+            dispatch({ type: PUBLISHER_CREATE_RESET });
+            navigate('/publishers');
         } else {
-            if (!publisher.name || publisher._id !== publisherId) {
-                dispatch(detailPublisher(publisherId));
-            } else {
-                setName(publisher.name);
-                setAddress(publisher.address);
-                setDescription(publisher.description);
+            if (add != 'add') {
+                if (Object.keys(publisher).length === 0) {
+                    dispatch(detailPublisher(publisherId));
+                } else {
+                    setName(publisher.data.name);
+                    setAddress(publisher.data.address);
+                    setPhone(publisher.data.phone);
+                    setDescription(publisher.data.description);
+                }
             }
+        }
+            
         }
     }, [        
         dispatch,
         publisherId,
         publisher,
-        successUpdate
+        successUpdate,
+        successCreate
     ]);
 
     const submitHandler = (e) => {
         e.preventDefault();
 
+        if(add != 'add') {
         dispatch(updatePublisher({
-            _id: publisherId,
-            name,
-            address,
-            description,
+            publisher_id: publisherId,
+            name: name,
+            address: address,
+            phone: phone,
+            description: description,
         }));
+        }else{
+            dispatch(createPublisher({
+                name: name,
+                address: address,
+                phone: phone,
+                description: description,
+            }));
+        } 
     };
 
     return (
         <MainLayout>
-            <Link to='/publishers' className='btn btn-light my-3'>
+            <Link href='/publishers' className='btn btn-light my-3'>
                 Go Back
             </Link>
             <div className={classes.paper}>
@@ -105,7 +133,7 @@ const PublisherEdit = () => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Edit Publisher
+                    Publisher Details
                 </Typography>
                 {loadingUpdate && <Loader />}
                 {errorUpdate && <Message variant='error'>{errorUpdate}</Message>}
@@ -113,7 +141,7 @@ const PublisherEdit = () => {
                     <Loader />
                 ) : error ? (
                     <Message variant='error'>{error}</Message>
-                ) : (
+                ) : add === 'add' ? (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -122,9 +150,9 @@ const PublisherEdit = () => {
                                     required
                                     fullWidth
                                     id="name"
-                                    label="Enter Name"
+                                    label="Publisher Name"
                                     name="name"
-                                    value={name}
+                                    defaultValue={""}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
@@ -136,7 +164,7 @@ const PublisherEdit = () => {
                                     id="address"
                                     label="Enter Address"
                                     name="address"
-                                    value={address}
+                                    defaultValue={""}
                                     onChange={(e) => setAddress(e.target.value)}
                                 />
                             </Grid>
@@ -145,10 +173,84 @@ const PublisherEdit = () => {
                                     variant="outlined"
                                     required
                                     fullWidth
+                                    id="phone"
+                                    label="Phone Number"
+                                    name="phone"
+                                    defaultValue={""}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </Grid> 
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
                                     id="description"
                                     label="Enter Desc"
                                     name="description"
-                                    value={description}
+                                    defaultValue={""}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </Grid>         
+                        </Grid>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                ) : Object.keys(publisher).length === 0 ? <Loader/> : (
+                    <form className={classes.form} onSubmit={submitHandler}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="name"
+                                    label="Publisher Name"
+                                    name="name"
+                                    defaultValue={publisher.data.name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="address"
+                                    label="Enter Address"
+                                    name="address"
+                                    defaultValue={publisher.data.address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="phone"
+                                    label="Phone Number"
+                                    name="phone"
+                                    defaultValue={publisher.data.phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </Grid> 
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="description"
+                                    label="Enter Desc"
+                                    name="description"
+                                    defaultValue={publisher.data.description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </Grid>         
