@@ -45,7 +45,7 @@ const NewUsers = () => {
                     <Divider variant="inset" component="li" />
                     {
                         users.data.slice(0, 5).map((user) => (
-                            <Link key={user.user_id} color="inherit" href={`/users/${user._id}/edit`}>
+                            <Link key={user.user_id} color="inherit" href={`/users/${user.user_id}/edit`}>
                                 <ListItem button alignItems="flex-start">
                                     <ListItemAvatar>
                                         <Avatar alt="User" src={user.avatar} />

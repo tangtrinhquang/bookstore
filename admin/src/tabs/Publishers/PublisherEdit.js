@@ -76,10 +76,10 @@ const PublisherEdit = () => {
     useEffect(() => {
         if(successUpdate) {
             dispatch({ type: PUBLISHER_UPDATE_RESET });
-            navigate('/publishers');
+            window.location.href = "/publishers"
         } else { if(successCreate) {
             dispatch({ type: PUBLISHER_CREATE_RESET });
-            navigate('/publishers');
+            window.location.href = "/publishers"
         } else {
             if (add != 'add') {
                 if (Object.keys(publisher).length === 0) {
@@ -91,9 +91,8 @@ const PublisherEdit = () => {
                     setDescription(publisher.data.description);
                 }
             }
-        }
-            
-        }
+        }       
+    }
     }, [        
         dispatch,
         publisherId,
@@ -113,7 +112,7 @@ const PublisherEdit = () => {
             phone: phone,
             description: description,
         }));
-        }else{
+        } else {
             dispatch(createPublisher({
                 name: name,
                 address: address,

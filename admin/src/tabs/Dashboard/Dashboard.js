@@ -58,6 +58,8 @@ const Dashboard = () => {
         }
     }, [dispatch, userInfo]);
 
+    console.log(userLogin);
+
     return (
         <MainLayout>
             <Grid container spacing={3}>

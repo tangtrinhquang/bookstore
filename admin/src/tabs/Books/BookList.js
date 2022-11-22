@@ -59,7 +59,7 @@ const BookList = () => {
     const { userInfo } = userLogin;
 
     const bookList = useSelector(state => state.bookList);
-    const { loading, error, books, details, gNames, pNames } = bookList;
+    const { loading, error, books, authors, genres, publishers } = bookList;
 
     const bookDelete = useSelector(state => state.bookDelete);
     const {
@@ -151,9 +151,9 @@ const BookList = () => {
                                                 </TableCell>
                                                 <TableCell>{book.name}</TableCell>
                                                 <TableCell>$ {book.price}</TableCell>
-                                                <TableCell>{details[index].data.data.name}</TableCell>
-                                                <TableCell>{gNames[index].data.data.name}</TableCell>
-                                                <TableCell>{pNames[index].data.data.name}</TableCell>
+                                                <TableCell>{authors.find(author => author.author_id === book.author_id).name}</TableCell>
+                                                <TableCell>{genres.find(genre => genre.genre_id === book.genre_id).name}</TableCell>
+                                                <TableCell>{publishers.find(publisher => publisher.publisher_id === book.publisher_id).name}</TableCell>
                                                 <TableCell>
                                                     <Link href={`/books/${book.book_id}/edit`} onClick={(e) => e.preventDefault}>
                                                         <Button style={{margin: "5px"}} variant="contained" color="secondary" href="">

@@ -71,7 +71,7 @@ const Login = () => {
                 <Typography component="h1" variant="h5">
                     Sign in
                     </Typography>
-                {/* {error && <Message variant='danger'>{error}</Message>} */}
+                {error && <Message variant='error'>{error}</Message>}
                 {loading && <Loader />}
                 <form className={classes.form} onSubmit={submitHandler}>
                     <TextField
@@ -120,11 +120,11 @@ const Login = () => {
                             Forgot password?
                                 </Link>
                     </Grid>
-                    <Grid item>
+                    {/* <Grid item>
                         <Link href="/register" variant="body2">
                             {"Don't have an account? Sign Up"}
                         </Link>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </div>
         </AuthLayout>

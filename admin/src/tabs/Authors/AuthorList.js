@@ -107,7 +107,7 @@ const AuthorList = () => {
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                AUTHOR LIST ({count})
+                AUTHOR LIST ({authors?.length})
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12}>

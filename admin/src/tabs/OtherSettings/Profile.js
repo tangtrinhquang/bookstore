@@ -150,7 +150,7 @@ const Profile = () => {
                                 <TextField
                                     variant="outlined"
                                     margin="normal"
-                                    required
+                                    disabled
                                     fullWidth
                                     id="email"
                                     label="Email Address"

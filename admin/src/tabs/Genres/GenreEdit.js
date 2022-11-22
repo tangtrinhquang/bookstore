@@ -74,10 +74,10 @@ const GenreEdit = () => {
     useEffect(() => {
         if(successUpdate) {
             dispatch({ type: GENRE_UPDATE_RESET });
-            navigate('/genres');
+            window.location.href = "/genres"
         } else { if(successCreate) {
             dispatch({ type: GENRE_CREATE_RESET });
-            navigate('/genres');
+            window.location.href = "/genres"
         } else {
             if (add != 'add') {
             if (Object.keys(genre).length === 0) {

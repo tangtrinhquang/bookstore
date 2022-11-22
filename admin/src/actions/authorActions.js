@@ -62,7 +62,7 @@ export const detailAuthor = (id) => async (dispatch) => {
     };
 };
 
-export const createAuthor = () => async (dispatch, getState) => {
+export const createAuthor = (author) => async (dispatch) => {
     try {
         dispatch({ type: types.AUTHOR_CREATE_REQUEST });
 
@@ -74,7 +74,7 @@ export const createAuthor = () => async (dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/author`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/author`, author, config);
 
         dispatch({
             type: types.AUTHOR_CREATE_SUCCESS,
@@ -108,9 +108,9 @@ export const updateAuthor = (author) => async (dispatch) => {
             },
         };
 
-        const { data } = await axios.put( //post
+        const { data } = await axios.post(
         process.env.REACT_APP_API_URL+`/api/author/${author.author_id}`,
-            author,
+            author.formData,
             config
         );
 
@@ -138,7 +138,7 @@ export const updateAuthor = (author) => async (dispatch) => {
     };
 };
 
-export const deleteAuthor = (id) => async (dispatch, getState) => {
+export const deleteAuthor = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.AUTHOR_DELETE_REQUEST });
 

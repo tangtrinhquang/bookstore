@@ -66,7 +66,7 @@ const UserEdit = () => {
     useEffect(() => {
         if (successUpdate) {
             dispatch({ type: USER_UPDATE_RESET })
-            navigate('/users')
+            window.location.href = "/users"
         } else {
             if (Object.keys(user).length === 0) {
                 dispatch(getUserDetail(userId))

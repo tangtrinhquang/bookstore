@@ -19,25 +19,35 @@ export const listBooks = (pageNumber = '') => async (dispatch) => {
             config
         );
 
-        const details = await Promise.all(data.data.map((el) => {
-                return axios.get(process.env.REACT_APP_API_URL+`/api/author/${el.author_id}`, config)
-            })
-        )
+        // const details = await Promise.all(data.data.map((el) => {
+        //         return axios.get(process.env.REACT_APP_API_URL+`/api/author/${el.author_id}`, config)
+        //     })
+        // )
 
-        const gNames = await Promise.all(data.data.map((el) => {
-                return axios.get(process.env.REACT_APP_API_URL+`/api/genre/${el.genre_id}`, config)
-            })
-        )   
+        // const gNames = await Promise.all(data.data.map((el) => {
+        //         return axios.get(process.env.REACT_APP_API_URL+`/api/genre/${el.genre_id}`, config)
+        //     })
+        // )   
 
-        const pNames = await Promise.all(data.data.map((el) => {
-                return axios.get(process.env.REACT_APP_API_URL+`/api/publisher/${el.publisher_id}`, config)
-            })
-        )
+        // const pNames = await Promise.all(data.data.map((el) => {
+        //         return axios.get(process.env.REACT_APP_API_URL+`/api/publisher/${el.publisher_id}`, config)
+        //     })
+        // )
 
-        dispatch({
-            type: types.BOOK_LIST_SUCCESS,
-            payload: { data, details, gNames, pNames }
-        });
+        const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`, config);
+
+        const genres = await axios.get(process.env.REACT_APP_API_URL+`/api/genre`, config);
+
+        const publishers = await axios.get(process.env.REACT_APP_API_URL+`/api/publisher`, config);
+
+        const dataAuthor = authors.data.data;
+        const dataGenre = genres.data.data;
+        const dataPublisher = publishers.data.data;
+
+            dispatch({
+                type: types.BOOK_LIST_SUCCESS,
+                payload: { data, dataAuthor, dataGenre, dataPublisher }
+            });
 
     } catch (error) {
         dispatch({
@@ -50,7 +60,7 @@ export const listBooks = (pageNumber = '') => async (dispatch) => {
     };
 };
 
-export const getDetailBook = (id) => async (dispatch) => {
+export const getDetailBook = (mode, id) => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_DETAILS_REQUEST });
 
@@ -62,23 +72,36 @@ export const getDetailBook = (id) => async (dispatch) => {
             },
         };
 
-        const book = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`, config);
-
         const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`, config);
 
         const genres = await axios.get(process.env.REACT_APP_API_URL+`/api/genre`, config);
 
         const publishers = await axios.get(process.env.REACT_APP_API_URL+`/api/publisher`, config);
 
-        const dataBook = book.data.data; 
         const dataAuthor = authors.data.data;
         const dataGenre = genres.data.data;
         const dataPublisher = publishers.data.data;
 
-        dispatch({
-            type: types.BOOK_DETAILS_SUCCESS,
-            payload: { dataBook, dataAuthor, dataGenre, dataPublisher},
-        });
+        console.log(dataAuthor);
+
+        if(mode === 'add'){
+            const book = await axios.get(process.env.REACT_APP_API_URL+`/api/book`, config);
+            const dataBook = book.data.data; 
+            dispatch({
+                type: types.BOOK_DETAILS_SUCCESS,
+                payload: { dataBook, dataAuthor, dataGenre, dataPublisher},
+            });
+        }
+
+        if(mode === 'edit'){
+            const book = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`, config);
+            const dataBook = book.data.data; 
+            dispatch({
+                type: types.BOOK_DETAILS_SUCCESS,
+                payload: { dataBook, dataAuthor, dataGenre, dataPublisher},
+            });
+        }
+
     } catch (error) {
         dispatch({
             type: types.BOOK_DETAILS_FAIL,
@@ -90,7 +113,7 @@ export const getDetailBook = (id) => async (dispatch) => {
     };
 };
 
-export const createBook = () => async (dispatch, getState) => {
+export const createBook = (book) => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_CREATE_REQUEST });
 
@@ -102,7 +125,7 @@ export const createBook = () => async (dispatch, getState) => {
             },
         };
 
-        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/book`, {}, config);
+        const { data } = await axios.post(process.env.REACT_APP_API_URL+`/api/book`, book, config);
 
         dispatch({
             type: types.BOOK_CREATE_SUCCESS,
@@ -123,7 +146,7 @@ export const createBook = () => async (dispatch, getState) => {
     };
 };
 
-export const updateBook = (book) => async (dispatch, getState) => {
+export const updateBook = (book) => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_UPDATE_REQUEST });
 
@@ -132,12 +155,13 @@ export const updateBook = (book) => async (dispatch, getState) => {
         const config = {
             headers: {
                 Authorization: `Bearer ${userData.data.access_token}`,
+                'Content-Type': 'multipart/form-data'
             },
         };
 
-        const { data } = await axios.put(
+        const { data } = await axios.post(
         process.env.REACT_APP_API_URL+`/api/book/${book.book_id}`, 
-            book,
+            book.formData,
             config
         );
 
@@ -165,17 +189,15 @@ export const updateBook = (book) => async (dispatch, getState) => {
     };
 };
 
-export const deleteBook = (id) => async (dispatch, getState) => {
+export const deleteBook = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_DELETE_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                Authorization: `Bearer ${userInfo.data.access_token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 

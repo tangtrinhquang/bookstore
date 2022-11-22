@@ -13,8 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { detailAuthor, updateAuthor } from '../../actions/authorActions'
-import { AUTHOR_UPDATE_RESET } from '../../messages/authorMessages'
+import { detailAuthor, updateAuthor, createAuthor } from '../../actions/authorActions'
+import { AUTHOR_UPDATE_RESET, AUTHOR_CREATE_RESET } from '../../messages/authorMessages'
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -47,8 +47,10 @@ const AuthorEdit = () => {
     const { id } = useParams();
     const authorId = id;
 
+    const { add } = useParams();
+
     const [name, setName] = useState('');
-    const [about, setAbout] = useState('');
+    const [description, setDescription] = useState('');
     const [portrait, setPortrait] = useState();
     const [uploading, setUploading] = useState(false);
 
@@ -64,18 +66,32 @@ const AuthorEdit = () => {
         success: successUpdate,
     } = authorUpdate;
 
+    const authorCreate = useSelector(state => state.authorCreate);
+    const {
+        loading: loadingCreate,
+        error: errorCreate,
+        success: successCreate,
+    } = authorUpdate;
+
 console.log(author);
 
     useEffect(() => {
         if(successUpdate) {
             dispatch({ type: AUTHOR_UPDATE_RESET });
-            navigate('/authors');
-        } else {
+            window.location.href = "/authors"
+        } 
+
+        if (successCreate) {
+            dispatch({ type: AUTHOR_CREATE_RESET })
+            window.location.href = "/authors"
+        }
+        
+        if( add !== 'add' ){
             if (Object.keys(author).length === 0) {
                 dispatch(detailAuthor(authorId));
             } else {
                 setName(author.data.name);
-                setAbout(author.data.description);
+                setDescription(author.data.description);
                 setPortrait(author.data.portrait);
             }
         }
@@ -83,7 +99,8 @@ console.log(author);
         dispatch,
         authorId,
         author,
-        successUpdate
+        successUpdate,
+        successCreate
     ]);
 
     const [imgName, setImgName] = useState();
@@ -110,12 +127,6 @@ console.log(author);
         reader.readAsDataURL(file);
 
         try {
-            // const config = {
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //     },
-            // };
-
             setPortrait(file);
             setUploading(false);
         } catch (error) {
@@ -127,12 +138,22 @@ console.log(author);
     const submitHandler = (e) => {
         e.preventDefault();
 
-        dispatch(updateAuthor({
-            author_id: authorId,
-            name: name,
-            about: about,
-            portrait: portrait,
-        }));
+        let formData = new FormData(e.target);
+        formData.append("portrait", portrait);
+
+        for(var pair of formData.entries()){
+            console.log(pair);
+        }
+
+        if(add !== 'add') {
+            formData.append("_method","PUT");
+            dispatch(updateAuthor({
+                author_id: authorId,
+                formData: formData,
+            }));
+        } else {
+            dispatch(createAuthor(formData));
+        }
     };
 
     return (
@@ -153,8 +174,8 @@ console.log(author);
                     <Loader />
                 ) : error ? (
                     <Message variant='error'>{error}</Message>
-                ) : Object.keys(author).length === 0 ? <Loader/> : (
-                    <form className={classes.form} onSubmit={submitHandler}>
+                ) : add === 'add' ? (
+                <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField
@@ -164,7 +185,7 @@ console.log(author);
                                     id="name"
                                     label="Author Name"
                                     name="name"
-                                    defaultValue={author.data.name}
+                                    defaultValue={""}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </Grid>
@@ -172,12 +193,11 @@ console.log(author);
                                 <TextField
                                     variant="outlined"
                                     disabled
-                                    required
                                     fullWidth
                                     id="portrait"
                                     label="Portrait"
                                     name="portrait"
-                                    value={imgName}
+                                    value={imgName||''}
                                 />
                                 <input 
                                     accept="image/*" 
@@ -205,11 +225,81 @@ console.log(author);
                                     required
                                     fullWidth
                                     minRows={4}
-                                    id="about"
-                                    label="Enter About"
-                                    name="about"
+                                    id="description"
+                                    label="Description"
+                                    name="description"
+                                    defaultValue={""}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </Grid>         
+                        </Grid>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                ) : Object.keys(author).length === 0 ? <Loader/> : (
+                    <form className={classes.form} onSubmit={submitHandler}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="name"
+                                    label="Author Name"
+                                    name="name"
+                                    defaultValue={author.data.name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    disabled
+                                    required
+                                    fullWidth
+                                    id="portrait"
+                                    label="Portrait"
+                                    name="portrait"
+                                    value={imgName||''}
+                                />
+                                <input 
+                                    accept="image/*" 
+                                    className={classes.input} 
+                                    id="icon-button-file" 
+                                    type="file" 
+                                    onChange={uploadFileHandler}
+                                />
+                                <img style={{margin: "5px"}}
+                                    id="book-img"
+                                    src={imgSrc}
+                                    alt=""
+                                    width="25%"
+                                /> 
+                                <label htmlFor="icon-button-file">
+                                    <IconButton color="primary" aria-label="upload picture" component="span">
+                                        <PhotoCamera />
+                                    </IconButton>
+                                </label>
+                                {uploading && <Loader />}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    minRows={4}
+                                    id="description"
+                                    label="Description"
+                                    name="description"
                                     defaultValue={author.data.description}
-                                    onChange={(e) => setAbout(e.target.value)}
+                                    onChange={(e) => setDescription(e.target.value)}
                                 />
                             </Grid>         
                         </Grid>

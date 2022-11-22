@@ -15,8 +15,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import { getDetailBook, updateBook } from '../../actions/bookActions'
-import { BOOK_UPDATE_RESET } from '../../messages/bookMessages'
+import { getDetailBook, updateBook, createBook, listBooks } from '../../actions/bookActions'
+import { BOOK_UPDATE_RESET, BOOK_CREATE_RESET } from '../../messages/bookMessages'
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import { InputLabel } from '@material-ui/core';
@@ -52,6 +52,8 @@ const BookEdit = () => {
     const { pgNumber } = useParams();
     const pageNumber = pgNumber || 1;
 
+    const { add } = useParams();
+
     const [name, setName] = useState('');
     const [price, setPrice] = useState(0);
     const [image, setImage] = useState();
@@ -70,6 +72,9 @@ const BookEdit = () => {
     const bookDetail = useSelector(state => state.bookDetail);
     const { loading, error, book, authors, genres, publishers } = bookDetail;
 
+    // const bookList = useSelector(state => state.bookList);
+    // const { authorsAdd, genresAdd, publishersAdd, books } = bookList;
+
     const bookUpdate = useSelector(state => state.bookUpdate);
     const {
         loading: loadingUpdate,
@@ -77,34 +82,51 @@ const BookEdit = () => {
         success: successUpdate,
     } = bookUpdate;
 
+    const bookCreate = useSelector(state => state.bookCreate);
+    const {
+        loading: loadingCreate,
+        error: errorCreate,
+        success: successCreate,
+    } = bookCreate;
+
     useEffect(() => {
         if (successUpdate) {
             dispatch({ type: BOOK_UPDATE_RESET })
-            navigate('/books');
-        } else {
+            window.location.href = "/books"
+        }
+
+        if (successCreate) {
+            dispatch({ type: BOOK_CREATE_RESET })
+            window.location.href = "/books"
+        }
+
+        if( add !== 'add' ){
             if (Object.keys(book).length === 0) {
-                dispatch(getDetailBook(bookId)); 
+                dispatch(getDetailBook('edit',bookId)); 
             } else {
-                setName(book.name);
-                setPrice(book.price);
-                setImage(book.image);
-                setAuthor(book.author_id);
-                setGenre(book.genre_id);
-                setPages(book.page);
-                // setSales(book.sales);
-                // setPublishedAt(book.publishedAt);
-                setPublisher(book.publisher_id);
-                // setCountInStock(book.countInStock);
-                setDescription(book.description)
+            setName(book.name);
+            setPrice(book.price);
+            setAuthor(book.author_id);
+            setGenre(book.genre_id);
+            setPages(book.page);
+            setPublisher(book.publisher_id);
+            setDescription(book.description)
+            }
+        } 
+        if( add === 'add' ) {
+            if (Object.keys(book).length === 0) {
+                dispatch(getDetailBook('add',bookId))
             }
         }
     }, [
         dispatch,
         bookId,
         book,
-        genre,
+        genres,
         publishers,
-        successUpdate
+        authors,
+        successUpdate,
+        successCreate,
     ]);
 
     const [imgName, setImgName] = useState();
@@ -142,17 +164,30 @@ const BookEdit = () => {
     const submitHandler = (e) => {
         e.preventDefault();
 
-        dispatch(updateBook({
-            book_id: bookId,
-            name: name,
-            price: price,
-            image: image,
-            author_id: author,
-            page: pages,
-            genre_id: genre,
-            publisher_id: publisher,
-            description: description,
-        }));
+        let formData = new FormData(e.target);
+        formData.append("image", image);
+        formData.append("author_id", author);
+        formData.append("genre_id", genre);
+        formData.append("publisher_id", publisher);
+        formData.append("page", pages);
+
+        for(var pair of formData.entries()){
+            console.log(pair);
+        }
+
+        if(add !== 'add') {
+            formData.append("_method","PUT");
+            dispatch(updateBook({
+                book_id: bookId,
+                formData: formData,
+            }));
+        } else {
+            formData.append("height","8");
+            formData.append("length","20");
+            formData.append("width","15");
+            formData.append("weight","100");
+            dispatch(createBook(formData));
+        }
     };
 
     return (
@@ -173,7 +208,152 @@ const BookEdit = () => {
                     <Loader />
                 ) : error ? (
                     <Message variant='error'>{error}</Message>
-                ) : Object.keys(book).length === 0 || genres.length === 0 || publishers.length === 0 ? <Loader/> : (
+                ) : Object.keys(book).length === 0 || genres.length === 0 || publishers.length === 0 || authors.length === 0 ? <Loader/> : add === 'add' ? ( 
+                    <form className={classes.form} onSubmit={submitHandler}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    id="name"
+                                    label="Book Name"
+                                    name="name"
+                                    defaultValue={""}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    fullWidth
+                                    id="price"
+                                    label="Enter Price"
+                                    name="price"
+                                    defaultValue={""}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    disabled
+                                    required
+                                    fullWidth
+                                    id="image"
+                                    label="Cover Art"
+                                    name="image"
+                                    value={imgName||''}
+                                />
+                                <input
+                                    accept="image/*"
+                                    className={classes.input}
+                                    id="icon-button-file"
+                                    type="file"
+                                    onChange={uploadFileHandler}
+                                />
+                                <img style={{margin: "5px"}}
+                                    id="book-img"
+                                    src={imgSrc}
+                                    alt=""
+                                    width="25%"
+                                /> 
+                                <label htmlFor="icon-button-file">
+                                    <IconButton color="primary" aria-label="upload picture" component="span">
+                                        <PhotoCamera />
+                                    </IconButton>
+                                </label>
+                                {uploading && <Loader />}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <InputLabel id='author-label'>Select Author</InputLabel>
+                                <Select
+                                    labelId='author-label'
+                                    label="Select Auhor"
+                                    variant="outlined"
+                                    id="author"
+                                    defaultValue={""}
+                                    fullWidth
+                                    onChange={(e) => setAuthor(e.target.value)}
+                                >
+                                    {authors.map((author, index) => (
+                                        <MenuItem key={index} value={author.author_id}>{author.name}</MenuItem>
+                                    ))}
+                                </Select>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    fullWidth
+                                    id="pages"
+                                    label="Enter Pages"
+                                    name="pages"
+                                    defaultValue={""}
+                                    onChange={(e) => setPages(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                            <InputLabel id='genre-label'>Select Genre</InputLabel>
+                                <Select
+                                    labelId='genre-label'
+                                    label="Select Genre"
+                                    variant="outlined"
+                                    id="genres"
+                                    defaultValue={""}
+                                    fullWidth
+                                    onChange={(e) => setGenre(e.target.value)}
+                                >
+                                    {genres.map((genreType, index) => (
+                                        <MenuItem key={index} value={genreType.genre_id}>{genreType.name}</MenuItem>
+                                    ))}
+                                </Select>
+                            </Grid>
+                            <Grid item xs={12}>
+                            <InputLabel id='publisher-label'>Select Publisher</InputLabel>
+                                <Select
+                                    labelId='publisher-label'
+                                    label="Select Publisher"
+                                    variant="outlined"
+                                    id="publishers"
+                                    defaultValue={""}
+                                    fullWidth
+                                    onChange={(e) => setPublisher(e.target.value)}
+                                >
+                                    {publishers.map((publisher, index) => (
+                                        <MenuItem key={index} value={publisher.publisher_id}>{publisher.name}</MenuItem>
+                                    ))}
+                                </Select>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    required
+                                    fullWidth
+                                    multiline
+                                    minRows={4}
+                                    id="description"
+                                    label="Enter Description"
+                                    name="description"
+                                    defaultValue={""}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                ) : Object.keys(book).length === 0 || genres.length === 0 || publishers.length === 0 || authors.length === 0 ? <Loader/> : (
                     <form className={classes.form} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -210,7 +390,7 @@ const BookEdit = () => {
                                     id="image"
                                     label="Cover Art"
                                     name="image"
-                                    value={imgName}
+                                    value={imgName||''}
                                 />
                                 <input
                                     accept="image/*"
@@ -239,7 +419,7 @@ const BookEdit = () => {
                                     label="Select Auhor"
                                     variant="outlined"
                                     id="author"
-                                    value={book.author_id}
+                                    defaultValue={book.author_id}
                                     fullWidth
                                     onChange={(e) => setAuthor(e.target.value)}
                                 >
@@ -268,7 +448,7 @@ const BookEdit = () => {
                                     label="Select Genre"
                                     variant="outlined"
                                     id="genres"
-                                    value={book.genre_id}
+                                    defaultValue={book.genre_id}
                                     fullWidth
                                     onChange={(e) => setGenre(e.target.value)}
                                 >
@@ -277,18 +457,6 @@ const BookEdit = () => {
                                     ))}
                                 </Select>
                             </Grid>
-                            {/* <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    id="publishedAt"
-                                    label="Enter Published At"
-                                    name="publishedAt"
-                                    value={publishedAt}
-                                    onChange={(e) => setPublishedAt(e.target.value)}
-                                />
-                            </Grid> */}
                             <Grid item xs={12}>
                             <InputLabel id='publisher-label'>Select Publisher</InputLabel>
                                 <Select
@@ -296,7 +464,7 @@ const BookEdit = () => {
                                     label="Select Publisher"
                                     variant="outlined"
                                     id="publishers"
-                                    value={book.publisher_id}
+                                    defaultValue={book.publisher_id}
                                     fullWidth
                                     onChange={(e) => setPublisher(e.target.value)}
                                 >
@@ -305,19 +473,6 @@ const BookEdit = () => {
                                     ))}
                                 </Select>
                             </Grid>
-                            {/* <Grid item xs={12}>
-                                <TextField
-                                    variant="outlined"
-                                    type="number"
-                                    required
-                                    fullWidth
-                                    id="countInStock"
-                                    label="Enter Count In Stock"
-                                    name="number"
-                                    value={countInStock}
-                                    onChange={(e) => setCountInStock(e.target.value)}
-                                />
-                            </Grid> */}
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"

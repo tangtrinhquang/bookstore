@@ -1,6 +1,7 @@
 import * as types from '../messages/bookMessages';
 
 export const bookListReducer = (state = { books: [] }, action) => {
+    console.log(action.type);
     switch (action.type) {
         case types.BOOK_LIST_REQUEST:
             return { loading: true, books: [] };
@@ -8,12 +9,12 @@ export const bookListReducer = (state = { books: [] }, action) => {
             return {
                 loading: false,
                 books: action.payload.data,
-                details : action.payload.details,
-                gNames : action.payload.gNames,
-                pNames : action.payload.pNames,
-                // pages: action.payload.data.pages,
-                // page: action.payload.data.page,
-                // count: action.payload.data.count,
+                // details : action.payload.details,
+                // gNames : action.payload.gNames,
+                // pNames : action.payload.pNames,
+                authors: action.payload.dataAuthor,
+                genres: action.payload.dataGenre,
+                publishers: action.payload.dataPublisher,  
             };
         case types.BOOK_LIST_FAIL:
             return { loading: false, error: action.payload };
@@ -63,7 +64,7 @@ export const bookCreateReducer = (state = {}, action) => {
         case types.BOOK_CREATE_FAIL:
             return { loading: false, error: action.payload };
         case types.BOOK_CREATE_RESET:
-            return {};
+            return { books: {} };
         default:
             return state;
     };
