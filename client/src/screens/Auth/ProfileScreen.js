@@ -11,6 +11,8 @@ import { USER_UPDATE_PROFILE_RESET } from 'src/messages/userMessages';
 const ProfileScreen = ({ location, history }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('')
+    const [address, setAddress] = useState('')
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState(null);
@@ -31,51 +33,44 @@ const ProfileScreen = ({ location, history }) => {
     const orderListMy = useSelector(state => state.orderListMy);
     const { loading: loadingOrders, error: errorOrders, orders } = orderListMy;
 
+    const userData = JSON.parse(localStorage.getItem('userInfo'))
+
     useEffect(() => {
         if (!userInfo) {
             history.push('/login');
         } else {
-            if (!user || !user.name || success) {
+            if (Object.keys(user).length === 0) {
                 dispatch({ type: USER_UPDATE_PROFILE_RESET });
-                dispatch(getUserDetail('profile'));
-                dispatch(listMyOrders());
+                dispatch(getUserDetail(userData.data.user_id));
+                // dispatch(listMyOrders());
             } else {
-                setName(user.name);
-                setEmail(user.email);
-                setAvatar(user.avatar);
+                setName(user.data.name);
+                setEmail(user.data.email);
+                setPhone(user.data.phone)
+                setAddress(user.data.address)
             }
         }
     }, [dispatch, history, userInfo, user, success]);
 
-    const uploadFileHandler = async (e) => {
-        const file = e.target.files[0]
-        const formData = new FormData()
-        formData.append('image', file)
-        setUploading(true)
+    // const uploadFileHandler = async (e) => {
+    //     const file = e.target.files[0]
+    //     const formData = new FormData()
+    //     setUploading(true)
 
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-            }
-
-            const { data } = await axios.post('/api/upload', formData, config)
-
-            setAvatar(data)
-            setUploading(false)
-        } catch(error) {
-            console.error(error)
-            setUploading(false)
-        }
-    }
+    //         setAvatar(data)
+    //         setUploading(false)
+    //     } catch(error) {
+    //         console.error(error)
+    //         setUploading(false)
+    //     }
+    // }
 
     const submitHandler = (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             setMessage('Passwords do not match');
         } else {
-            dispatch(updateUserProfile({ id: user._id, name, email, avatar, password }));
+            dispatch(updateUserProfile({ id: user.user_id, name, email, avatar, password }));
         }
     };
 
@@ -90,14 +85,14 @@ const ProfileScreen = ({ location, history }) => {
                     <Loader />
                 ) : error ? (
                     <Message variant='error'>{error}</Message>
-                ) : (
+                ) : Object.keys(user).length === 0 ? <Loader/> : (
                     <Form onSubmit={submitHandler}>
                         <Form.Group controlId='name'>
                             <Form.Label>Name</Form.Label>
                             <Form.Control
                                 type='name'
                                 placeholder='Enter name'
-                                value={name}
+                                defaultValue={user.data.name}
                                 onChange={(e) => setName(e.target.value)}
                             ></Form.Control>
                         </Form.Group>
@@ -105,14 +100,15 @@ const ProfileScreen = ({ location, history }) => {
                         <Form.Group controlId='email'>
                             <Form.Label>Email Address</Form.Label>
                             <Form.Control
+                                disabled
                                 type='email'
                                 placeholder='Enter email'
-                                value={email}
+                                value={user.data.email}
                                 onChange={(e) => setEmail(e.target.value)}
                             ></Form.Control>
                         </Form.Group>
 
-                        <Form.Group controlId='avatar'>
+                        {/* <Form.Group controlId='avatar'>
                             <Form.Label>Avatar</Form.Label>
                             <Form.Control
                                 type='text'
@@ -127,7 +123,7 @@ const ProfileScreen = ({ location, history }) => {
                                 onChange={uploadFileHandler}
                             ></Form.File>
                                 {uploading && <Loader />}
-                        </Form.Group>
+                        </Form.Group> */}
 
                         <Form.Group controlId='password'>
                             <Form.Label>Password</Form.Label>
@@ -157,7 +153,7 @@ const ProfileScreen = ({ location, history }) => {
             </Col>
             <Col md={9}>
                 <h2>My Orders</h2>
-                {loadingOrders ? (
+                {/* {loadingOrders ? (
                     <Loader />
                 ) : errorOrders ? (
                     <Message variant='danger'>{errorOrders}</Message>
@@ -204,7 +200,7 @@ const ProfileScreen = ({ location, history }) => {
                             ))}
                         </tbody>
                     </Table>
-                )}
+                )} */}
             </Col>
         </Row>
     );

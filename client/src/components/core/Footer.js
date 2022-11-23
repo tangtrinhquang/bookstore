@@ -70,8 +70,14 @@ const Footer = () => {
                     <Col lg={2} md={6}>
                         <h6 className="text-uppercase font-weight-bold mb-4 text-light">Company</h6>
                         <ul className="list-unstyled mb-0">
-                            <li className="mb-2"><a href="/login" className="text-light">Login</a></li>
-                            <li className="mb-2"><a href="/register" className="text-light">Register</a></li>
+                            {
+                                userInfo ? <></> : (
+                                <>
+                                    <li className="mb-2"><a href="/login" className="text-light">Login</a></li>
+                                    <li className="mb-2"><a href="/register" className="text-light">Register</a></li>
+                                </>
+                                )
+                            }
                             <li className="mb-2"><a href="#" className="text-light">Wishlist</a></li>
                             <li className="mb-2"><a href="/book" className="text-light">Our Books</a></li>
                         </ul>
