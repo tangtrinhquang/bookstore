@@ -6,12 +6,12 @@
 }
   
 .btn-theme {
-    background: linear-gradient(45deg, #4d0067, #dc3545);
+    background: linear-gradient(45deg, #2a6ef5, #94e2d5);
     color: #fff;
 }
 
 .btn-theme:hover {
-    background: #007bff;
+    background: #2a6ef5;
 }
   
 .btn-group-category {
@@ -48,7 +48,7 @@
 .page-item.active .page-link {
     z-index: 3;
     color: #fff;
-    background: linear-gradient(45deg, #4d0067, #dc3545);
+    background: linear-gradient(45deg, #2a6ef5, #94e2d5);
     border-color: #fff;
 }
   
@@ -116,7 +116,7 @@
     padding: 1rem;
     margin: 1em;
     border-radius: 10px;
-    background: linear-gradient(45deg, #4d0067, #dc3545);
+    background: linear-gradient(45deg, #2a6ef5, #94e2d5);
     color: #fff;
 }
 
