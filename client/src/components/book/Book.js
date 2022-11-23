@@ -4,10 +4,10 @@ import { Card, Button } from 'react-bootstrap';
 import Rating from './Rating';
 import "src/assets/styles/book.css";
 
-const Book = ({ book }) => {
+const Book = ({ book, authors }) => {
     return (
         <Card className='my-3 p-3 rounded'>
-            <Card.Img className="book-img" src={book.image} variant='top' height="350" />
+            <Card.Img className="book-img" src={process.env.REACT_APP_API_URL+"/storage/"+book.image} variant='top' height="350" />
 
             <Card.Body>
                 <Link to={`/book/${book.book_id}`}>
@@ -17,7 +17,7 @@ const Book = ({ book }) => {
                 </Link>
 
                 <Card.Text as='div'>
-                    <p>by {book.author}</p>
+                    <p>by {authors.find(author => author.author_id === book.author_id).name}</p>
                 </Card.Text>
 
                 {book.sales > 0 ? (

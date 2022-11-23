@@ -15,22 +15,24 @@ const TopAuthors = () => {
         dispatch(listTopAuthors());
     }, [dispatch]);
 
+console.log(authors);
+
     return loading ? (
         <Loader />
     ) : error ? (
         <Message variant='danger' >{error}</Message>
-    ) : (
+    ) : Object.keys(authors).length === 0 ? <Loader/> : (
         <Jumbotron className="bg-top-author">
             <h2 className="text-center p-3 text-light">Top Authors</h2>
             <Container>
                 <Row>
-                    {authors.map((author) => (
+                    {authors.data.map((author) => (
                         <Col sm={12} md={6} lg={3}>
                             <blockquote className="blockquote mb-0 text-center card-body" key={author._id}>
                                 <div className="author-top">
-                                    <Image src={author.portrait} fluid className="author-img border" />
+                                    <Image style={{height:'250px', width:'100%'}} src={process.env.REACT_APP_API_URL+"/storage/"+author.portrait} fluid className="author-img border" />
                                     <div className="overlay">
-                                        <Link to={`/author/${author._id}`}>
+                                        <Link key={author.author_id} to={`/author/${author.author_id}`}>
                                             <div className="author-text">
                                                 <h4>
                                                     {author.name}</h4>

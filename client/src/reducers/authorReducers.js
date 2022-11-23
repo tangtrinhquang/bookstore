@@ -7,7 +7,7 @@ export const authorListReducer = (state = { authors: [] }, action) => {
         case types.AUTHOR_LIST_SUCCESS:
             return {
                 loading: false,
-                authors: action.payload.authors,
+                authors: action.payload.data,
                 pages: action.payload.pages,
                 page: action.payload.page,
             };

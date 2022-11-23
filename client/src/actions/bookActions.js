@@ -21,9 +21,13 @@ export const listBooks = (
             process.env.REACT_APP_API_URL+`/api/book?pageNumber=${pageNumber}&sort=${sort}`, config
         );
 
+        const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`, config);
+
+        const dataAuthor = authors.data.data;
+
         dispatch({
             type: types.BOOK_LIST_SUCCESS,
-            payload: data,
+            payload: { data, dataAuthor }
         });
     } catch (error) {
         dispatch({

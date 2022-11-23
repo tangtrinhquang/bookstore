@@ -15,11 +15,13 @@ const BookHomeScreen = ({ match }) => {
 
     const dispatch = useDispatch();
     const bookList = useSelector(state => state.bookList);
-    const { loading, error, books, page, pages } = bookList;
+    const { loading, error, books, page, pages, authors } = bookList;
 
     useEffect(() => {
         dispatch(listBooks(pageNumber, sort));
     }, [dispatch, pageNumber, sort]);
+
+    console.log(books);
 
     return (    
         <>
@@ -48,18 +50,18 @@ const BookHomeScreen = ({ match }) => {
                         <Dropdown.Item href="/book?sort=-price">Sort by price : high to low </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
-                <h6 className="align-right text-right">Showing {1 + Number(pageNumber - 1) * 12} - {pageNumber * 12} of {books?.data?.length} result</h6>
+                <h6 className="align-right text-right">Showing {1 + Number(pageNumber - 1) * books?.data?.length} - {pageNumber * books?.data?.length} of {books?.data?.length} result</h6>
             </div>
             {loading ? (
                 <Loader />
             ) : error ? (
                 <Message variant='error'>{error}</Message>
-            ) : (
+            ) : Object.keys(books).length === 0 ? <Loader/> : (
                 <>
                     <Row>
                         {books.data.map((book) => (
                             <Col key={book.book_id} sm={12} md={6} lg={3}>
-                                <Book book={book} />
+                                <Book book={book} authors={authors} />
                             </Col>
                         ))}
                     </Row>

@@ -7,7 +7,6 @@ import { Rating, ReleaseBooks } from 'src/components/book';
 import { detailBook } from 'src/actions/bookActions';
 import addToCart from 'src/assets/animations/addToCart.gif';
 import starsRating from 'src/assets/animations/starsRating.gif';
-import writeReview from 'src/assets/animations/writeReview.gif';
 import "src/assets/styles/book.css";
 
 const BookDetailScreen = ({ history, match }) => {

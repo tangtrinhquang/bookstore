@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Col, Form, Row, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import { listGenres, } from '../../actions/genreActions';
+import { useDispatch, useSelector } from 'react-redux';
+import Message from '../shared/Message';
+import Loader from '../shared/Loader';
 
 const Filter = ({ history }) => {
     const [keyword, setKeyword] = useState('');
-    const [genres, setGenres] = useState('');
+    const [genre, setGenres] = useState('');
     const [rate, setRate] = useState(0);
     const [price, setPrice] = useState([0, 120]);
+    const dispatch = useDispatch();
+
+    const genreList = useSelector(state => state.genreList);
+    const { loading, error, genres, page, pages } = genreList;
+
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin; 
+
+    useEffect(() => {
+        dispatch(listGenres());
+    }, [
+        dispatch,
+        userInfo,
+    ]);
 
     const submitHandler = (e) => {
         e.preventDefault();
         history.push(
-            `/search?keyword=${keyword}&genres=${genres}&rate=${rate}&bottom=${price[0]}&top=${price[1]}`
+            `/search?keyword=${keyword}&genres=${genre}&rate=${rate}&bottom=${price[0]}&top=${price[1]}`
         );
     };
 
@@ -31,21 +49,24 @@ const Filter = ({ history }) => {
                         onChange={(e) => setKeyword(e.target.value)}
                     />
                 </Col>
-                <Col sm={12} md={6} lg={3}>
-                    <Form.Label>Genres</Form.Label>
-                    <select
-                        onChange={(e) => setGenres(e.target.value)}
-                    >
-                        <option >Open this genres type</option>
-                        <option value="Action">Action</option>
-                        <option value="Adventure">Adventure</option>
-                        <option value="Fantasy">Fantasy</option>
-                        <option value="Mystery">Mystery</option>
-                        <option value="History">History</option>
-                        <option value="Romance">Romance</option>
-                        <option value="Sci-Fic">Sci-Fic</option>
-                    </select>
-                </Col>
+                {loading ? (
+                        <Loader />
+                    ) : error ? (
+                        <Message variant='error'>{error}</Message>
+                    ) : genres.length === 0 ? <Loader/> : (
+                        <Col sm={12} md={6} lg={3}>
+                            <Form.Label>Genres</Form.Label>
+                            <select
+                                onChange={(e) => setGenres(e.target.value)}
+                            >
+                        {
+                            genres.map((genre) => (
+                                <option value={genre.genre_id}>{genre.name}</option>
+                            ))
+                        }
+                            </select>
+                        </Col>
+                    )}
                 <Col sm={12} md={6} lg={3}>
                     <Form.Label>Choose Price Range</Form.Label>
                     <OverlayTrigger

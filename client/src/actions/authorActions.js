@@ -73,7 +73,7 @@ export const listTopAuthors = () => async (dispatch) => {
             },
         };
 
-        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/authors/top` , config);
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/author` , config);
 
         dispatch({
             type: types.AUTHOR_TOP_SUCCESS,

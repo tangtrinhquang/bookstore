@@ -55,14 +55,10 @@ const Footer = () => {
                         <Loader />
                     ) : error ? (
                         <Message variant='error'>{error}</Message>
-                    ) : genres.length === 0 ? <Loader/> :(
+                    ) : genres.length === 0 ? <Loader/> : (
                         <Col lg={2} md={6}>
                             <h6 className="text-uppercase font-weight-bold mb-4 text-light">Genres</h6>
                             <ul className="list-unstyled mb-0">
-                                {/* <li className="mb-2"><a href="#" className="text-light">Novel</a></li>
-                                <li className="mb-2"><a href="#" className="text-light">Science Fiction</a></li>
-                                <li className="mb-2"><a href="#" className="text-light">Graphic</a></li>
-                                <li className="mb-2"><a href="#" className="text-light">Poetry</a></li> */}
                                 {
                                     getRandom(genres, 4).slice(0, 5).map((genre) => (
                                         <li className="mb-2"><a href="#" className="text-light">{genre.name}</a></li>

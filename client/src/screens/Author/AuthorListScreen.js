@@ -17,8 +17,9 @@ const AuthorListScreen = ({ match }) => {
 
     useEffect(() => {
         dispatch(listAuthors(keyword, pageNumber));
-
     }, [dispatch, keyword, pageNumber]);
+
+    console.log(authors);
 
     return (
         <>
@@ -32,8 +33,8 @@ const AuthorListScreen = ({ match }) => {
             <Jumbotron className="text-center bg-author-image">
                 <Row>
                     <Col className="p-5 text-light">
-                        <h1>Famous Literature Authors</h1>
-                        <p>Welcome to you with the best bookstore online</p>
+                        <h1>Famous Authors</h1>
+                        <p>The ability to write is an art through which one can express their most inner thoughts in words</p>
                     </Col>
                 </Row>
             </Jumbotron>
@@ -42,14 +43,14 @@ const AuthorListScreen = ({ match }) => {
                 <Loader />
             ) : error ? (
                 <Message variant='danger'>{error}</Message>
-            ) : (
+            ) : authors.length === 0 ? <Loader/> : (
                 <Row>
                     {authors.map((author) => (
-                        <Col key={author._id} sm={12} md={6} lg={4} className="text-center">
+                        <Col key={author.author_id} sm={12} md={6} lg={4} className="text-center">
                             <div className="p-3">
-                                <Image className="author" src={author.portrait} width="200" roundedCircle />
+                                <Image style={{height:'350px', width:'100%'}} className="author" src={process.env.REACT_APP_API_URL+"/storage/"+author.portrait} width="200" roundedCircle />
 
-                                <Link to={`/author/${author._id}`}>
+                                <Link key={author.author_id} to={`/author/${author.author_id}`}>
                                     <h5 className="title text-center mt-3">
                                         <strong>{author.name}</strong>
                                     </h5>
@@ -64,7 +65,8 @@ const AuthorListScreen = ({ match }) => {
                         keyword={keyword ? keyword : ''}
                     />
                 </Row>
-            )}
+            )
+            }
         </>
     );
 }
