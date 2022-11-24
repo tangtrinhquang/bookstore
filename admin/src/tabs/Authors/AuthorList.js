@@ -81,9 +81,9 @@ const AuthorList = () => {
             navigate('/login');
         }
         if (successCreate) {
-            navigate(`/author/${createdAuthor._id}/edit`);
+            navigate(`/authors/${createdAuthor.author_id}/edit`);
         } else {
-            dispatch(listAuthors('', pageNumber));
+            dispatch(listAuthors(pageNumber));
         }
     }, [
         dispatch,
@@ -93,6 +93,8 @@ const AuthorList = () => {
         createdAuthor,
         pageNumber,
     ]);
+
+    console.log(authors);
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure')) {
@@ -107,7 +109,7 @@ const AuthorList = () => {
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                AUTHOR LIST ({authors?.length})
+                AUTHOR LIST ({authors?.total})
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
@@ -120,7 +122,7 @@ const AuthorList = () => {
                             <Loader />
                         ) : error ? (
                             <Message variant='error'>{error}</Message>
-                        ) : (
+                        ) : Object.keys(authors).length === 0 ? <Loader/> : (
                             <>
                                 <Table size='small'>
                                     <TableHead>
@@ -134,9 +136,9 @@ const AuthorList = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {authors.map((author, index) => (
+                                        {authors?.data.map((author, index) => (
                                             <TableRow key={author.author_id}>
-                                                <TableCell>{index + 1 + Number(pageNumber-1)*12}</TableCell>
+                                                <TableCell>{index + 1 + Number(pageNumber-1)*10}</TableCell>
                                                 <TableCell>
                                                     <img
                                                         src={process.env.REACT_APP_API_URL+"/storage/"+author.portrait}
@@ -163,12 +165,12 @@ const AuthorList = () => {
                                         ))}
                                     </TableBody>
                                 </Table>
-                                <Paginate category='authors' pages={pages} page={page} />
+                                <Paginate category='authors' pages={authors.last_page} page={authors.current_page} />
                             </>
                         )}
                         <div className={classes.createdButton}>
                             <Button color="primary" href="/authors/add" onClick={createAuthorHandler}>
-                                <AddCircleIcon fontSize="large"/>
+                                <AddCircleIcon fontSize="large"/>   
                             </Button>
                         </div>
                     </Paper>

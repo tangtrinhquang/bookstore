@@ -15,7 +15,7 @@ export const listAuthors = ( pageNumber = '') => async (dispatch) => {
         };
 
         const { data } = await axios.get(
-            process.env.REACT_APP_API_URL+`/api/author?pageNumber=${pageNumber}`, config
+            process.env.REACT_APP_API_URL+`/api/author/paginate/10?page=${pageNumber}`, config
         );
 
         dispatch({

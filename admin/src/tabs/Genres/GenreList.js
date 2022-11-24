@@ -54,7 +54,7 @@ const GenreList = () => {
     const dispatch = useDispatch();
 
     const genreList = useSelector(state => state.genreList);
-    const { loading, error, genres, page, pages, count } = genreList;
+    const { loading, error, genres, page, pages } = genreList;
 
     const genreDelete = useSelector(state => state.genreDelete);
     const {

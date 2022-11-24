@@ -102,7 +102,7 @@ const UserList = () => {
                                             <EditIcon />
                                         </Button>
                                     </Link>
-                                    <Button style={{margin: "5px"}} variant="contained" color="primary" onClick={() => deleteHandler(user._id)}>
+                                    <Button style={{margin: "5px"}} variant="contained" color="primary" onClick={() => deleteHandler(user.user_id)}>
                                         <DeleteIcon />
                                     </Button>
                                 </TableCell>

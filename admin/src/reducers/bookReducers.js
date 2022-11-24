@@ -1,7 +1,6 @@
 import * as types from '../messages/bookMessages';
 
 export const bookListReducer = (state = { books: [] }, action) => {
-    console.log(action.type);
     switch (action.type) {
         case types.BOOK_LIST_REQUEST:
             return { loading: true, books: [] };

@@ -15,24 +15,9 @@ export const listBooks = (pageNumber = '') => async (dispatch) => {
         };
 
         const { data } = await axios.get(
-            process.env.REACT_APP_API_URL+`/api/book?pageNumber=${pageNumber}`,
+            process.env.REACT_APP_API_URL+`/api/book/paginate/10?page=${pageNumber}`,
             config
         );
-
-        // const details = await Promise.all(data.data.map((el) => {
-        //         return axios.get(process.env.REACT_APP_API_URL+`/api/author/${el.author_id}`, config)
-        //     })
-        // )
-
-        // const gNames = await Promise.all(data.data.map((el) => {
-        //         return axios.get(process.env.REACT_APP_API_URL+`/api/genre/${el.genre_id}`, config)
-        //     })
-        // )   
-
-        // const pNames = await Promise.all(data.data.map((el) => {
-        //         return axios.get(process.env.REACT_APP_API_URL+`/api/publisher/${el.publisher_id}`, config)
-        //     })
-        // )
 
         const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`, config);
 
@@ -81,8 +66,6 @@ export const getDetailBook = (mode, id) => async (dispatch) => {
         const dataAuthor = authors.data.data;
         const dataGenre = genres.data.data;
         const dataPublisher = publishers.data.data;
-
-        console.log(dataAuthor);
 
         if(mode === 'add'){
             const book = await axios.get(process.env.REACT_APP_API_URL+`/api/book`, config);

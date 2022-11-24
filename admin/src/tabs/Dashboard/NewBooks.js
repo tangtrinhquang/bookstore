@@ -43,7 +43,7 @@ const NewBooks = () => {
                 <List subheader={<ListSubheader>New Books</ListSubheader>}>
                     <Divider variant="inset" component="li" />
                     {
-                        books.data.slice(0, 5).map((book) => (
+                        books.data.data.slice(0, 5).map((book) => (
                             <Link key={book.book_id} color="inherit" href={`/books/${book.book_id}/edit`}>
                                 <ListItem button alignItems="flex-start">
                                     <ListItemAvatar>

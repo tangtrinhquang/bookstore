@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
 
-function Paging ({ category, pages, page }) {
+const Paginate = ({ category, pages, page }) => {
     return (
         pages > 1 && (
             <Pagination
@@ -12,7 +12,7 @@ function Paging ({ category, pages, page }) {
                 renderItem={(item) => (
                     <PaginationItem
                         component={Link}
-                        to={`/${category}/${item.page}`}
+                        to={`/${category}/paginate/${item.page}`}
                         {...item}
                     />
                 )}
@@ -21,4 +21,4 @@ function Paging ({ category, pages, page }) {
     );
 }
 
-export default Paging
+export default Paginate

@@ -49,8 +49,6 @@ const BookEdit = () => {
     const classes = useStyles();
     const { id } = useParams()
     const bookId = id;
-    const { pgNumber } = useParams();
-    const pageNumber = pgNumber || 1;
 
     const { add } = useParams();
 
@@ -62,8 +60,12 @@ const BookEdit = () => {
     // const [publishedAt, setPublishedAt] = useState('');
     const [publisher, setPublisher] = useState('');
     const [pages, setPages] = useState(0);
+    const [width, setWidth] = useState(0);
+    const [length, setLength] = useState(0);
+    const [height, setHeight] = useState(0);
+    const [weight, setWeight] = useState(0);
     // const [sales, setSales] = useState(0);
-    // const [countInStock, setCountInStock] = useState(0);
+    const [countInStock, setCountInStock] = useState(0);
     const [description, setDescription] = useState('');
     const [uploading, setUploading] = useState(false);
 
@@ -71,9 +73,6 @@ const BookEdit = () => {
 
     const bookDetail = useSelector(state => state.bookDetail);
     const { loading, error, book, authors, genres, publishers } = bookDetail;
-
-    // const bookList = useSelector(state => state.bookList);
-    // const { authorsAdd, genresAdd, publishersAdd, books } = bookList;
 
     const bookUpdate = useSelector(state => state.bookUpdate);
     const {
@@ -111,6 +110,9 @@ const BookEdit = () => {
             setPages(book.page);
             setPublisher(book.publisher_id);
             setDescription(book.description)
+            setWidth(book.width);
+            setHeight(book.height);
+            setWeight(book.weight);
             }
         } 
         if( add === 'add' ) {
@@ -169,7 +171,11 @@ const BookEdit = () => {
         formData.append("author_id", author);
         formData.append("genre_id", genre);
         formData.append("publisher_id", publisher);
-        formData.append("page", pages);
+        // formData.append("page", pages);
+        // formData.append("width", width);
+        // formData.append("length", length);
+        // formData.append("height", height);
+        // formData.append("weight", weight);
 
         for(var pair of formData.entries()){
             console.log(pair);
@@ -182,10 +188,6 @@ const BookEdit = () => {
                 formData: formData,
             }));
         } else {
-            formData.append("height","8");
-            formData.append("length","20");
-            formData.append("width","15");
-            formData.append("weight","100");
             dispatch(createBook(formData));
         }
     };
@@ -234,6 +236,19 @@ const BookEdit = () => {
                                     name="price"
                                     defaultValue={""}
                                     onChange={(e) => setPrice(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    fullWidth
+                                    id="countInStock"
+                                    label="Stockpile"
+                                    name="countInStock"
+                                    defaultValue={""}
+                                    onChange={(e) => setCountInStock(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -289,9 +304,9 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     fullWidth
-                                    id="pages"
+                                    id="page"
                                     label="Enter Pages"
-                                    name="pages"
+                                    name="page"
                                     defaultValue={""}
                                     onChange={(e) => setPages(e.target.value)}
                                 />
@@ -327,6 +342,48 @@ const BookEdit = () => {
                                         <MenuItem key={index} value={publisher.publisher_id}>{publisher.name}</MenuItem>
                                     ))}
                                 </Select>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="width"
+                                    label="Enter Width"
+                                    name="witdth"
+                                    defaultValue={""}
+                                    onChange={(e) => setWidth(e.target.value)}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="length"
+                                    label="Enter Length"
+                                    name="length"
+                                    defaultValue={""}
+                                    onChange={(e) => setLength(e.target.value)}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="height"
+                                    label="Enter Height"
+                                    name="height"
+                                    defaultValue={""}
+                                    onChange={(e) => setHeight(e.target.value)}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="weight"
+                                    label="Enter Weight"
+                                    name="weight"
+                                    defaultValue={""}
+                                    onChange={(e) => setWeight(e.target.value)}
+                                />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
@@ -384,6 +441,19 @@ const BookEdit = () => {
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
+                                    type="number"
+                                    required
+                                    fullWidth
+                                    id="countInStock"
+                                    label="Stockpile"
+                                    name="countInStock"
+                                    defaultValue={book.countInStock}
+                                    onChange={(e) => setCountInStock(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
                                     disabled
                                     required
                                     fullWidth
@@ -434,9 +504,9 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     fullWidth
-                                    id="pages"
+                                    id="page"
                                     label="Enter Pages"
-                                    name="pages"
+                                    name="page"
                                     defaultValue={book.page}
                                     onChange={(e) => setPages(e.target.value)}
                                 />
@@ -472,6 +542,48 @@ const BookEdit = () => {
                                         <MenuItem key={index} value={publisher.publisher_id}>{publisher.name}</MenuItem>
                                     ))}
                                 </Select>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="width"
+                                    label="Enter Width"
+                                    name="witdth"
+                                    defaultValue={book.width}
+                                    onChange={(e) => setWidth(e.target.value)}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="length"
+                                    label="Enter Length"
+                                    name="length"
+                                    defaultValue={book.length}
+                                    onChange={(e) => setLength(e.target.value)}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="height"
+                                    label="Enter Height"
+                                    name="height"
+                                    defaultValue={book.height}
+                                    onChange={(e) => setHeight(e.target.value)}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    type="number"
+                                    required
+                                    id="weight"
+                                    label="Enter Weight"
+                                    name="weight"
+                                    defaultValue={book.weight}
+                                    onChange={(e) => setWeight(e.target.value)}
+                                />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField

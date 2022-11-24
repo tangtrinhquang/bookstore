@@ -83,7 +83,7 @@ const BookList = () => {
             navigate('/login')
         }
         if (successCreate) {
-            navigate(`/books/${createdBook._id}/edit`)
+            navigate(`/books/${createdBook.book_id}/edit`)
         } else {
             dispatch(listBooks(pageNumber))
         }
@@ -96,6 +96,8 @@ const BookList = () => {
         pageNumber,
     ])
 
+    console.log(books);
+
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure you want to delete this item?')) {
             dispatch(deleteBook(id))
@@ -107,10 +109,14 @@ const BookList = () => {
         dispatch(createBook())
     }
 
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                BOOK LIST ({books?.data?.length})
+                BOOK LIST ({books?.data?.total})
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
@@ -139,9 +145,9 @@ const BookList = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {books.data.map((book, index) => (
+                                        {books.data.data.map((book, index) => (
                                             <TableRow key={book.book_id}>
-                                                <TableCell>{index + 1 + Number(pageNumber-1)*12}</TableCell>
+                                                <TableCell>{index + 1 + Number(pageNumber-1)*10}</TableCell>
                                                 <TableCell>
                                                     <img
                                                         src={process.env.REACT_APP_API_URL+"/storage/"+book.image}
@@ -150,7 +156,7 @@ const BookList = () => {
                                                     />
                                                 </TableCell>
                                                 <TableCell>{book.name}</TableCell>
-                                                <TableCell>$ {book.price}</TableCell>
+                                                <TableCell>{numberWithCommas(book.price)}đ</TableCell>
                                                 <TableCell>{authors.find(author => author.author_id === book.author_id).name}</TableCell>
                                                 <TableCell>{genres.find(genre => genre.genre_id === book.genre_id).name}</TableCell>
                                                 <TableCell>{publishers.find(publisher => publisher.publisher_id === book.publisher_id).name}</TableCell>
@@ -168,7 +174,7 @@ const BookList = () => {
                                         ))}
                                     </TableBody>
                                 </Table>
-                                {/* <Paginate category='books' pages={pages} page={page} /> */}
+                                <Paginate category='books' pages={books.data.last_page} page={books.data.current_page} />
                             </>
                         )}
                         <div className={classes.createdButton}>

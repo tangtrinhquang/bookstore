@@ -248,6 +248,14 @@ const MainLayout = ({ children }) => {
                                 <ListItemText primary="Dashboard" />
                             </ListItem>
                         </Link>
+                        <Link color="inherit" href="/orders">
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <ShoppingCartIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Orders" />
+                            </ListItem>
+                        </Link>
                         <Link color="inherit" href="/users">
                             <ListItem button>
                                 <ListItemIcon>
@@ -256,7 +264,7 @@ const MainLayout = ({ children }) => {
                                 <ListItemText primary="Users" />
                             </ListItem>
                         </Link>
-                        <Link color="inherit" href="/books">
+                        <Link color="inherit" href="/books/paginate/1">
                             <ListItem button>
                                 <ListItemIcon>
                                     <MenuBookIcon />

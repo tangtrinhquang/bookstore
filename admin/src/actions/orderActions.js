@@ -2,24 +2,21 @@ import axios from 'axios';
 import { logout } from './userActions';
 import * as types from '../messages/orderMessages';
 
-export const getOrderDetail = (id) => async (dispatch, getState) => {
+export const getOrderDetail = (id) => async (dispatch) => {
     try {
         dispatch({
             type: types.ORDER_DETAILS_REQUEST,
         });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
-        const { data } = await axios.get(`/api/orders/${id}`, config);
+        const { data } = await axios.get(`/api/order/${id}`, config);
 
         dispatch({
             type: types.ORDER_DETAILS_SUCCESS,
@@ -40,23 +37,20 @@ export const getOrderDetail = (id) => async (dispatch, getState) => {
     };
 };
 
-export const payOrder = (orderId, paymentResult) => async (dispatch, getState) => {
+export const payOrder = (orderId, paymentResult) => async (dispatch) => {
     try {
         dispatch({ type: types.ORDER_PAY_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
         const { data } = await axios.put(
-            `/api/orders/${orderId}/pay`,
+            `/api/order/${orderId}/pay`,
             paymentResult,
             config,
         );
@@ -80,23 +74,20 @@ export const payOrder = (orderId, paymentResult) => async (dispatch, getState) =
     };
 };
 
-export const deliverOrder = (order) => async(dispatch, getState) => {
+export const deliverOrder = (order) => async(dispatch) => {
     try {
         dispatch({ type: types.ORDER_DELIVER_REQUEST });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
         const { data } = await axios.put(
-            `/api/orders/${order._id}/deliver`,
+            `/api/order/${order._id}/deliver`,
             {},
             config,
         );
@@ -120,20 +111,17 @@ export const deliverOrder = (order) => async(dispatch, getState) => {
     };
 };
 
-export const listOrders = () => async (dispatch, getState) => {
+export const listOrders = () => async (dispatch) => {
     try {
         dispatch({
             type: types.ORDER_LIST_REQUEST,
         });
 
-        const {
-            userLogin: { userInfo },
-        } = getState();
+        const userData = JSON.parse(localStorage.getItem('userInfo'))
 
         const config = {
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`,
+                Authorization: `Bearer ${userData.data.access_token}`,
             },
         };
 
