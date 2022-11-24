@@ -61,7 +61,7 @@ const Filter = ({ history }) => {
                             >
                         {
                             genres.map((genre) => (
-                                <option value={genre.genre_id}>{genre.name}</option>
+                                <option key={genre.genre_id} value={genre.genre_id}>{genre.name}</option>
                             ))
                         }
                             </select>

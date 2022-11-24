@@ -61,7 +61,7 @@ const Footer = () => {
                             <ul className="list-unstyled mb-0">
                                 {
                                     getRandom(genres, 4).slice(0, 5).map((genre) => (
-                                        <li className="mb-2"><a href="#" className="text-light">{genre.name}</a></li>
+                                        <li key={genre.genre_id} className="mb-2"><a href="#" className="text-light">{genre.name}</a></li>
                                     ))
                                 }
                             </ul>

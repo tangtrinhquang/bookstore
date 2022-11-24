@@ -6,16 +6,8 @@ export const listGenres = (pageNumber = '') => async (dispatch) => {
     try {
         dispatch({ type: types.GENRE_LIST_REQUEST });
 
-        const userData = JSON.parse(localStorage.getItem('userInfo'))
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userData.data.access_token}`,
-            }
-        };
-
         const { data } = await axios.get(
-            process.env.REACT_APP_API_URL+`/api/genre?pageNumber=${pageNumber}`, config
+            process.env.REACT_APP_API_URL+`/api/genre?pageNumber=${pageNumber}`
         );
 
         dispatch({

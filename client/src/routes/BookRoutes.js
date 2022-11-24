@@ -11,7 +11,7 @@ export default function BookRoutes() {
     return (
         <ScrollToTop>
             <Route path='/book/:id' component={BookDetailScreen} />
-            <Route path='/books/:pageNumber' component={BookHomeScreen} exact />
+            <Route path='/books/paginate/:pgNumber' component={BookHomeScreen} exact />
             <Route path='/book' component={BookHomeScreen} exact />
         </ScrollToTop>
     )

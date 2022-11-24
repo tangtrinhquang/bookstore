@@ -53,7 +53,7 @@ const settings = {
 
 const Genres = () => {
     return (
-        <Slider {...settings}>
+        <Slider style={{marginBottom: '50px'}} {...settings}>
             <Figure>
                 <Lottie
                     options={{ animationData: actionType }}

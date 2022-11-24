@@ -6,16 +6,8 @@ export const listPublisher = ( pageNumber = '') => async (dispatch) => {
     try {
         dispatch({ type: types.PUBLISHER_LIST_REQUEST });
 
-        const userData = JSON.parse(localStorage.getItem('userInfo'))
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userData.data.access_token}`,
-            }
-        };
-
         const { data } = await axios.get(
-            process.env.REACT_APP_API_URL+`/api/publisher?pageNumber=${pageNumber}`, config
+            process.env.REACT_APP_API_URL+`/api/publisher?pageNumber=${pageNumber}`,
         );
 
         dispatch({

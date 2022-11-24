@@ -18,15 +18,16 @@ export const authorListReducer = (state = { authors: [] }, action) => {
     }
 }
 
-export const authorDetailReducer = (
-    state = { author: { books: [] } },
-    action
-) => {
+export const authorDetailReducer = (state = { authors: [] }, action) => {
     switch(action.type) {
         case types.AUTHOR_DETAILS_REQUEST:
             return { ...state, loading: true };
         case types.AUTHOR_DETAILS_SUCCESS:
-            return { loading: false, author: action.payload };
+            return { 
+                loading: false, 
+                authors: action.payload.data,
+                books: action.payload.dataBook,
+            };
         case types.AUTHOR_DETAILS_FAIL:
             return { loading: false, error: action.payload };
         default:

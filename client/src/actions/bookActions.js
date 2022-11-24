@@ -9,19 +9,11 @@ export const listBooks = (
     try {
         dispatch({ type: types.BOOK_LIST_REQUEST });
 
-        const userData = JSON.parse(localStorage.getItem('userInfo'))
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userData.data.access_token}`,
-            },
-        };
-
         const { data } = await axios.get(
-            process.env.REACT_APP_API_URL+`/api/book?pageNumber=${pageNumber}&sort=${sort}`, config
+            process.env.REACT_APP_API_URL+`/api/book/paginate/12?page=${pageNumber}&sort=${sort}`
         );
 
-        const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`, config);
+        const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`);
 
         const dataAuthor = authors.data.data;
 
@@ -44,21 +36,13 @@ export const detailBook = (id) => async (dispatch) => {
     try {
         dispatch({ type: types.BOOK_DETAILS_REQUEST });
 
-        const userData = JSON.parse(localStorage.getItem('userInfo'))
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`);
 
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userData.data.access_token}`,
-            },
-        };
+        const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`);
 
-        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`, config);
+        const genres = await axios.get(process.env.REACT_APP_API_URL+`/api/genre`);
 
-        const authors = await axios.get(process.env.REACT_APP_API_URL+`/api/author`, config);
-
-        const genres = await axios.get(process.env.REACT_APP_API_URL+`/api/genre`, config);
-
-        const publishers = await axios.get(process.env.REACT_APP_API_URL+`/api/publisher`, config);
+        const publishers = await axios.get(process.env.REACT_APP_API_URL+`/api/publisher`);
 
         const dataAuthor = authors.data.data;
         const dataGenre = genres.data.data;
@@ -66,7 +50,7 @@ export const detailBook = (id) => async (dispatch) => {
 
         dispatch({
             type: types.BOOK_DETAILS_SUCCESS,
-            payload: { data, dataAuthor, dataGenre, dataPublisher},
+            payload: { data, dataAuthor, dataGenre, dataPublisher },
         });
     } catch (error) {
         dispatch({
@@ -89,16 +73,8 @@ export const searchBooks = (
     try {
         dispatch({ type: types.BOOK_SEARCH_REQUEST });
 
-        const userData = JSON.parse(localStorage.getItem('userInfo'))
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userData.data.access_token}`,
-            },
-        };
-
         const { data } = await axios.get(
-            process.env.REACT_APP_API_URL+`/api/book/search?keyword=${keyword}&genres=${genres}&bottom=${priceBottom}&top=${priceTop}&pageNumber=${pageNumber}`, config
+            process.env.REACT_APP_API_URL+`/api/book/search?keyword=${keyword}&genres=${genres}&bottom=${priceBottom}&top=${priceTop}&pageNumber=${pageNumber}`
         );
 
         dispatch({

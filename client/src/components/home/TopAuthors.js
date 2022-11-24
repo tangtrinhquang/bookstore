@@ -15,8 +15,6 @@ const TopAuthors = () => {
         dispatch(listTopAuthors());
     }, [dispatch]);
 
-console.log(authors);
-
     return loading ? (
         <Loader />
     ) : error ? (
@@ -26,9 +24,9 @@ console.log(authors);
             <h2 className="text-center p-3 text-light">Top Authors</h2>
             <Container>
                 <Row>
-                    {authors.data.map((author) => (
-                        <Col sm={12} md={6} lg={3}>
-                            <blockquote className="blockquote mb-0 text-center card-body" key={author._id}>
+                    {authors.data.slice(0, 8).map((author) => (
+                        <Col key={author.author_id} sm={12} md={6} lg={3}>
+                            <blockquote className="blockquote mb-0 text-center card-body" key={author.author_id}>
                                 <div className="author-top">
                                     <Image style={{height:'250px', width:'100%'}} src={process.env.REACT_APP_API_URL+"/storage/"+author.portrait} fluid className="author-img border" />
                                     <div className="overlay">

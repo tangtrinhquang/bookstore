@@ -8,8 +8,8 @@ const Paginate = ({ category, pages, page, query = '' }) => {
             <Pagination>
                 <LinkContainer to={
                     query
-                        ? `/${category}/1?${query}`
-                        : `/${category}/1`
+                        ? `/${category}/paginate/1?${query}`
+                        : `/${category}/paginate/1`
                 }>
                     <Pagination.First disabled={page === 1} />
                 </LinkContainer>
@@ -18,8 +18,8 @@ const Paginate = ({ category, pages, page, query = '' }) => {
                         key={x + 1}
                         to={
                             query
-                                ? `/${category}/${x + 1}?${query}`
-                                : `/${category}/${x + 1}`
+                                ? `/${category}/paginate/${x + 1}?${query}`
+                                : `/${category}/paginate/${x + 1}`
                         }
                     >
                         <Pagination.Item active={x + 1 === page}>
@@ -29,8 +29,8 @@ const Paginate = ({ category, pages, page, query = '' }) => {
                 ))}
                 <LinkContainer to={
                     query
-                        ? `/${category}/${pages}?${query}`
-                        : `/${category}/${pages}`
+                        ? `/${category}/paginate/${pages}?${query}`
+                        : `/${category}/paginate/${pages}`
                 }>
                     <Pagination.Last disabled={page === pages} />
                 </LinkContainer>

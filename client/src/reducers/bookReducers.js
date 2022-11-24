@@ -21,7 +21,7 @@ export const bookListReducer = (state = { books: [] }, action) => {
 };
 
 export const bookDetailsReducer = (
-    state = { book: { reviews: [] } },
+    state = { book: {} },
     action
 ) => {
     switch (action.type) {
