@@ -58,6 +58,10 @@ const PlaceOrderScreen = ({ history }) => {
         )
     }
 
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     return (
         <>
             <CheckoutSteps step1 step2 step3 step4 />
@@ -91,7 +95,7 @@ const PlaceOrderScreen = ({ history }) => {
                                             <Row>
                                                 <Col md={1}>
                                                     <Image
-                                                        src={item.image}
+                                                        src={process.env.REACT_APP_API_URL+"/storage/"+item.image}
                                                         alt={item.name}
                                                         fluid
                                                         rounded
@@ -103,7 +107,7 @@ const PlaceOrderScreen = ({ history }) => {
                                                     </Link>
                                                 </Col>
                                                 <Col md={4}>
-                                                    {item.quantity} x ${item.price} = ${item.quantity * item.price}
+                                                    {item.quantity} x {numberWithCommas(item.price)} = {numberWithCommas(item.quantity * item.price)} VND
                                                 </Col>
                                             </Row>
                                         </ListGroup.Item>
@@ -122,25 +126,25 @@ const PlaceOrderScreen = ({ history }) => {
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Items</Col>
-                                    <Col>${cart.itemsPrice}</Col>
+                                    <Col>{cart.itemsPrice} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Shipping</Col>
-                                    <Col>${cart.shippingPrice}</Col>
+                                    <Col>{cart.shippingPrice} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Tax</Col>
-                                    <Col>${cart.taxPrice}</Col>
+                                    <Col>{cart.taxPrice} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Total</Col>
-                                    <Col>${cart.totalPrice}</Col>
+                                    <Col>{cart.totalPrice} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, Route } from 'react-router-dom';
+import { Link, Route, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Breadcrumb, Dropdown } from 'react-bootstrap';
 import { Meta, Loader, Message, Paginate } from 'src/components/shared';
@@ -8,9 +8,10 @@ import { listBooks } from 'src/actions/bookActions';
 import Filter from 'src/components/core/Filter';
 import { useQuery } from 'src/hooks/useQuery';
 
-const BookHomeScreen = ({ match }) => {
+const BookHomeScreen = () => {
     const query = useQuery();
-    const pageNumber = match.params.pageNumber || 1;
+    const { pgNumber } = useParams();
+    const pageNumber = pgNumber || 1;
     const sort = query.get('sort');
 
     const dispatch = useDispatch();
@@ -20,8 +21,6 @@ const BookHomeScreen = ({ match }) => {
     useEffect(() => {
         dispatch(listBooks(pageNumber, sort));
     }, [dispatch, pageNumber, sort]);
-
-    console.log(books);
 
     return (    
         <>
@@ -50,7 +49,7 @@ const BookHomeScreen = ({ match }) => {
                         <Dropdown.Item href="/book?sort=-price">Sort by price : high to low </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
-                <h6 className="align-right text-right">Showing {1 + Number(pageNumber - 1) * books?.data?.length} - {pageNumber * books?.data?.length} of {books?.data?.length} result</h6>
+                <h6 className="align-right text-right">Showing {1 + Number(pageNumber - 1) * 12} - {pageNumber * 12} of {books?.data?.total} result</h6>
             </div>
             {loading ? (
                 <Loader />
@@ -59,7 +58,7 @@ const BookHomeScreen = ({ match }) => {
             ) : Object.keys(books).length === 0 ? <Loader/> : (
                 <>
                     <Row>
-                        {books.data.map((book) => (
+                        {books.data.data.map((book) => (
                             <Col key={book.book_id} sm={12} md={6} lg={3}>
                                 <Book book={book} authors={authors} />
                             </Col>
@@ -67,8 +66,8 @@ const BookHomeScreen = ({ match }) => {
                     </Row>
                     <Paginate
                         category="books"
-                        pages={pages}
-                        page={page}
+                        pages={books.data.last_page}
+                        page={books.data.current_page}
                         query={`sort=${sort}`}
                     />
                 </>

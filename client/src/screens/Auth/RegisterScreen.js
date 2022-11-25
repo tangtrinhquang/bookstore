@@ -8,6 +8,8 @@ import { register } from 'src/actions/userActions';
 const RegisterScreen = ({ location, history }) => {
     const [name, setName] = useState('');
     const [email, setEmail]= useState('');
+    const [phone, setPhone]= useState('');
+    const [address, setAddress]= useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState(null);
@@ -60,6 +62,16 @@ const RegisterScreen = ({ location, history }) => {
                         placeholder='Enter email'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
+
+                <Form.Group controlId='phone'>
+                    <Form.Label>Phone Number</Form.Label>
+                    <Form.Control
+                        type='phone'
+                        placeholder='Enter phone number'
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                     ></Form.Control>
                 </Form.Group>
 
