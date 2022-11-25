@@ -48,8 +48,8 @@ const settings = {
 const ReleaseBooks = () => {
     const dispatch = useDispatch();
 
-    const bookNewReleases = useSelector(state => state.bookNewReleases);
-    const { loading, error, books } = bookNewReleases;
+    const bookList = useSelector(state => state.bookList);
+    const { loading, error, books, authors } = bookList;
 
     useEffect(() => {
         dispatch(listBooks());
@@ -58,12 +58,12 @@ const ReleaseBooks = () => {
     return loading ? (
         <Loader />
     ) : error ? (
-        <Message variant='danger'>{error}</Message>
-    ) : (
+        <Message variant='error'>{error}</Message>
+    ) : Object.keys(books).length === 0 ? <Loader/> : (
         <Slider {...settings}>
-            {books.data.slice(0, 5).map((book) => (
+            {books.data.data.slice(0, 5).map((book) => (
                 <Figure key={book.book_id}>
-                    <Book book={book} />
+                    <Book book={book} authors={authors} />
                 </Figure>
             ))} 
         </Slider>

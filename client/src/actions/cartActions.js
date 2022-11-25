@@ -12,17 +12,18 @@ export const addToCart = (id, quantity) => async(dispatch, getState) => {
     };
     
     const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/book/${id}`, config);
+    console.log(data);
 
-    const newPrice = data.sales ? data.sales : data.price;
+    const newPrice = data.sales ? data.sales : data.data.price;
 
     dispatch({
         type: types.CART_ADD_ITEM,
         payload: {
-            book: data._id,
-            name: data.name,
-            image: data.image,
+            book: data.data.book_id,
+            name: data.data.name,
+            image: data.data.image,
             price: newPrice,
-            countInStock: data.countInStock,
+            countInStock: data.data.countInStock,
             quantity,
         },
     });
