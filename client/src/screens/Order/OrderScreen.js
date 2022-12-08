@@ -1,43 +1,51 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { PayPalButton } from 'react-paypal-button-v2'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message, Loader } from 'src/components/shared'
 import {
     getOrderDetail,
     payOrder,
-    deliverOrder,
 } from 'src/actions/orderActions'
+import { getUserDetail } from 'src/actions/userActions';
+import { calculateFee } from 'src/actions/locationActions'
 import * as types from 'src/messages/orderMessages'
 
 const OrderScreen = ({ match, history }) => {
-    const orderId = match.params.id
+    const { id } = useParams();
+    const orderId = id;
+
+    const shipAddress = JSON.parse(localStorage.getItem('shippingAddress'))
+    const userData = JSON.parse(localStorage.getItem('userInfo'))
 
     const [sdkReady, setSdkReady] = useState(false)
     const dispatch = useDispatch()
 
     const orderDetail = useSelector((state) => state.orderDetail)
-    const { order, loading, error } = orderDetail
+    const { order, loading, error, books } = orderDetail
 
     const orderPay = useSelector((state) => state.orderPay)
     const { loading: loadingPay, success: successPay } = orderPay
 
-    const orderDeliver = useSelector((state) => state.orderDeliver)
-    const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+    const userDetail = useSelector(state => state.userDetail);
+    const { user } = userDetail;
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
+    const shipFee = useSelector(state => state.calcFee);
+    const { fees } = shipFee;
+
     if (!loading) {
         //   Calculate prices
         const addDecimals = (num) => {
-            return (Math.round(num * 100) / 100).toFixed(2)
+            return (Math.round(num * 100) / 100)
         }
 
         order.itemsPrice = addDecimals(
-            order.orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
+            order.data.order_items.reduce((acc, item) => acc + item.price * item.quantity, 0)
         )
     }
 
@@ -47,10 +55,10 @@ const OrderScreen = ({ match, history }) => {
         }
 
         const addPayPalScript = async () => {
-            const { data: clientId } = await axios.get(`/api/config/paypal`)
+            // const { data: clientId } = await axios.get(`/api/config/paypal`)
             const script = document.createElement('script')
             script.type = 'text/javascript'
-            script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
+            script.src = `https://www.paypal.com/sdk/js?client-id=sb`
             script.async = true
             script.onload = () => {
                 setSdkReady(true)
@@ -58,27 +66,32 @@ const OrderScreen = ({ match, history }) => {
             document.body.appendChild(script)
         }
 
-
-        if (!order || successPay || successDeliver || order._id !== orderId) {
+        if (order === undefined) {
             dispatch({ type: types.ORDER_PAY_RESET })
             dispatch({ type: types.ORDER_DELIVER_RESET })
             dispatch(getOrderDetail(orderId))
-        } else if (!order.isPaid) {
+        } else if (!order?.isPaid) {
             if (!window.paypal) {
                 addPayPalScript()
             } else {
                 setSdkReady(true)
             }
         }
-    }, [dispatch, orderId, successPay, successDeliver, order])
+    }, [dispatch, orderId, order])
+
+    useEffect(() => {
+        if(Object.keys(user).length === 0){
+            dispatch(getUserDetail(userData.data.user_id));
+        }
+    }, [])
 
     const successPaymentHandler = (paymentResult) => {
         console.log(paymentResult)
         dispatch(payOrder(orderId, paymentResult))
     }
 
-    const deliverHandler = () => {
-        dispatch(deliverOrder(order))
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     return loading ? (
@@ -87,31 +100,29 @@ const OrderScreen = ({ match, history }) => {
         <Message variant='danger'>{error}</Message>
     ) : (
         <>
-            <h1>Order {order._id}</h1>
+            <h1>Order #{order.data.order_id}</h1>
             <Row>
                 <Col md={8}>
                     <ListGroup variant='flush'>
                         <ListGroup.Item>
                             <h2>Shipping</h2>
                             <p>
-                                <strong>Name: </strong> {order.user.name}
+                                <strong>Name: </strong> {user?.data === undefined ? "" : user.data.name }
                             </p>
                             <p>
                                 <strong>Email: </strong>{' '}
-                                <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
+                                <a href={`mailto:${user?.data === undefined ? "" : user.data.email}`}>{user?.data === undefined ? "" :user.data.email}</a>
                             </p>
                             <p>
-                                <strong>Address:</strong>
-                                {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
-                                {order.shippingAddress.postalCode},{' '}
-                                {order.shippingAddress.country}
+                                <strong>Address: </strong>
+                                {shipAddress === null ? (user?.data === undefined ? "" : user?.data.address) : shipAddress.address}
                             </p>
-                            {order.isDelivered ? (
+                            {order.data.status === "Processed" ? (
                                 <Message variant='success'>
-                                    Delivered on {order.deliveredAt}
+                                    Processed
                                 </Message>
                             ) : (
-                                <Message variant='danger'>Not Delivered</Message>
+                                <Message variant='danger'>Not Processed</Message>
                             )}
                         </ListGroup.Item>
 
@@ -119,39 +130,39 @@ const OrderScreen = ({ match, history }) => {
                             <h2>Payment Method</h2>
                             <p>
                                 <strong>Method: </strong>
-                                {order.paymentMethod}
+                                PayPal
                             </p>
-                            {order.isPaid ? (
-                                <Message variant='success'>Paid on {order.paidAt}</Message>
+                            {order.data.status === "Processed" ? (
+                                <Message variant='success'>Paid on {order.data.updatedAt}</Message>
                             ) : (
-                                <Message variant='danger'>Not Paid</Message>
+                                <Message variant='danger'>Waiting payment</Message>
                             )}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <h2>Order Items</h2>
-                            {order.orderItems.length === 0 ? (
+                            {order.data.order_items.length === 0 ? (
                                 <Message>Order is empty</Message>
                             ) : (
                                 <ListGroup variant='flush'>
-                                    {order.orderItems.map((item, index) => (
+                                    {order.data.order_items.map((item, index) => (
                                         <ListGroup.Item key={index}>
                                             <Row>
                                                 <Col md={1}>
                                                     <Image
-                                                        src={item.image}
-                                                        alt={item.name}
+                                                        src={process.env.REACT_APP_API_URL+"/storage/" + books.data.find(book => book.book_id === item.book_id)?.image}
+                                                        alt={books.data.find(book => book.book_id === item.book_id)?.name}
                                                         fluid
                                                         rounded
                                                     />
                                                 </Col>
                                                 <Col>
-                                                    <Link to={`/book/${item.book}`}>
-                                                        {item.name}
+                                                    <Link to={`/book/${item.book_id}`}>
+                                                        {books.data.find(book => book.book_id === item.book_id)?.name}
                                                     </Link>
                                                 </Col>
-                                                <Col md={4}>
-                                                    {item.quantity} x ${item.price} = ${item.quantity * item.price}
+                                                <Col md={5}>
+                                                    {item.quantity} x {numberWithCommas(item.price)} = {numberWithCommas(item.quantity * item.price)} VND
                                                 </Col>
                                             </Row>
                                         </ListGroup.Item>
@@ -170,28 +181,28 @@ const OrderScreen = ({ match, history }) => {
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Items</Col>
-                                    <Col>${order.itemsPrice}</Col>
+                                    <Col>{numberWithCommas(order.itemsPrice)} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Shipping</Col>
-                                    <Col>${order.shippingPrice}</Col>
+                                    <Col>{numberWithCommas(order.data.shipFee)} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
-                                    <Col>Tax</Col>
-                                    <Col>${order.taxPrice}</Col>
+                                    <Col>Tax (5%)</Col>
+                                    <Col>{numberWithCommas(order.data.productFee * 0.05)} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Total</Col>
-                                    <Col>${order.totalPrice}</Col>
+                                    <Col>{numberWithCommas(order.data.productFee)} VND</Col>
                                 </Row>
                             </ListGroup.Item>
-                            {!order.isPaid && (
+                            {order.data.status === "Unprocessed" && (
                                 <ListGroup.Item>
                                     {loadingPay && <Loader />}
                                     {!sdkReady ? (
@@ -204,21 +215,6 @@ const OrderScreen = ({ match, history }) => {
                                     )}
                                 </ListGroup.Item>
                             )}
-                            {loadingDeliver && <Loader />}
-                            {userInfo &&
-                                userInfo.isAdmin &&
-                                order.isPaid &&
-                                !order.isDelivered && (
-                                    <ListGroup.Item>
-                                        <Button
-                                            type='button'
-                                            className='btn btn-block'
-                                            onClick={deliverHandler}
-                                        >
-                                            Mark As Delivered
-                                        </Button>
-                                    </ListGroup.Item>
-                                )}
                         </ListGroup>
                     </Card>
                 </Col>

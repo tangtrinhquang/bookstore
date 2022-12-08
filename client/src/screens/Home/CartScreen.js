@@ -21,8 +21,6 @@ const CartScreen = ({ location, history }) => {
         }
     }, [dispatch, bookId, quantity]);
 
-    console.log(cart);
-
     const removeFromCartHandler = (id) => {
         dispatch(removeFromCart(id));
     };
@@ -53,7 +51,7 @@ const CartScreen = ({ location, history }) => {
                                             <Image src={process.env.REACT_APP_API_URL+"/storage/"+item.image} alt={item.name} fluid rounded />
                                         </Col>
                                         <Col md={3}>
-                                            <Link to={`/book/${item.book}`} className="title">{item.name}</Link>
+                                            <Link to={`/book/${item.book_id}`} className="title">{item.name}</Link>
                                         </Col>
                                         <Col md={2}>{numberWithCommas(item.price)} VND</Col>
                                         <Col md={2}>
@@ -62,7 +60,7 @@ const CartScreen = ({ location, history }) => {
                                                 value={item.quantity}
                                                 onChange={(e) =>
                                                     dispatch(
-                                                        addToCart(item.book, Number(e.target.value))
+                                                        addToCart(item.book_id, Number(e.target.value))
                                                     )
                                                 }
                                             >
@@ -96,7 +94,7 @@ const CartScreen = ({ location, history }) => {
                                     Subtotal ({cartItems.reduce((acc, item) => acc + item.quantity, 0)})
                                 items
                             </h2>
-                            {cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0).toFixed(2)} VND
+                            {numberWithCommas(cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0))} VND
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Button

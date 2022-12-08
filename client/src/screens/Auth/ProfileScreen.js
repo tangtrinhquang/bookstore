@@ -30,19 +30,19 @@ const ProfileScreen = ({ location, history }) => {
     const userUpdateProfile = useSelector(state => state.userUpdateProfile);
     const { success } = userUpdateProfile;
 
-    const orderListMy = useSelector(state => state.orderListMy);
-    const { loading: loadingOrders, error: errorOrders, orders } = orderListMy;
+    const myOrderList = useSelector(state => state.myOrderList);
+    const { loading: loadingOrders, error: errorOrders, orders } = myOrderList;
 
     const userData = JSON.parse(localStorage.getItem('userInfo'))
 
     useEffect(() => {
-        if (!userInfo) {
+        if (!userData) {
             history.push('/login');
         } else {
             if (Object.keys(user).length === 0) {
                 dispatch({ type: USER_UPDATE_PROFILE_RESET });
                 dispatch(getUserDetail(userData.data.user_id));
-                // dispatch(listMyOrders());
+                dispatch(listMyOrders(userData.data.user_id));
             } else {
                 setName(user.data.name);
                 setEmail(user.data.email);
@@ -73,6 +73,8 @@ const ProfileScreen = ({ location, history }) => {
             dispatch(updateUserProfile({ id: user.user_id, name, email, avatar, password }));
         }
     };
+
+    console.log(orders);
 
     return (
         <Row>
@@ -153,7 +155,7 @@ const ProfileScreen = ({ location, history }) => {
             </Col>
             <Col md={9}>
                 <h2>My Orders</h2>
-                {/* {loadingOrders ? (
+                {loadingOrders ? (
                     <Loader />
                 ) : errorOrders ? (
                     <Message variant='danger'>{errorOrders}</Message>
@@ -165,32 +167,32 @@ const ProfileScreen = ({ location, history }) => {
                                 <th>DATE</th>
                                 <th>PRICE</th>
                                 <th>PAID</th>
-                                <th>DELIVERED</th>
+                                <th>STATUS</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {orders.map((order) => (
-                                <tr key={order._id}>
-                                    <td>{order._id}</td>
+                                <tr key={order.order_id}>
+                                    <td>{order.order_id}</td>
                                     <td>{order.createdAt.substring(0, 10)}</td>
-                                    <td>{order.totalPrice}</td>
+                                    <td>{order.productFee}</td>
                                     <td>
-                                        {order.isPaid ? (
-                                            order.paidAt.substring(0, 10)
+                                        {order.status === "Processed" ? (
+                                            <i className='fas fa-check' style={{ color: 'green' }}></i>
                                         ) : (
                                             <i className='fas fa-times' style={{ color: 'red' }}></i>
                                         )}
                                     </td>
                                     <td>
-                                        {order.isDelivered ? (
-                                            order.deliveredAt.substring(0, 10)
+                                        {order.status === "Processed" ? (
+                                            <i className='fas fa-check' style={{ color: 'green' }}></i>
                                         ) : (
                                             <i className='fas fa-times' style={{ color: 'red' }}></i>
                                         )}
                                     </td>
                                     <td>
-                                        <LinkContainer to={`/order/${order._id}`}>
+                                        <LinkContainer to={`/order/${order.order_id}`}>
                                             <Button className='btn-sm' variant='light'>
                                                 Details
                                             </Button>
@@ -200,7 +202,7 @@ const ProfileScreen = ({ location, history }) => {
                             ))}
                         </tbody>
                     </Table>
-                )} */}
+                )}
             </Col>
         </Row>
     );

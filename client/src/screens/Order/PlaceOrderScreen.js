@@ -7,10 +7,20 @@ import { USER_DETAILS_RESET } from 'src/messages/userMessages'
 import { createOrder } from 'src/actions/orderActions'
 import { CheckoutSteps } from 'src/components/order'
 import { Message } from 'src/components/shared'
+import { getUserDetail } from 'src/actions/userActions';
+import { calculateFee } from 'src/actions/locationActions'
 
 const PlaceOrderScreen = ({ history }) => {
     const dispatch = useDispatch()
     const cart = useSelector(state => state.cart)
+
+    const userDetail = useSelector(state => state.userDetail);
+    const { user } = userDetail;
+
+    const shipFee = useSelector(state => state.calcFee);
+    const { fees } = shipFee;
+
+    const userData = JSON.parse(localStorage.getItem('userInfo'))
 
     if (!cart.shippingAddress.address) {
         history.push('/shipping')
@@ -19,41 +29,50 @@ const PlaceOrderScreen = ({ history }) => {
     }
 
     const addDecimals = (num) => {
-        return (Math.round(num * 100) / 100).toFixed(2)
+        return (Math.round(num * 100) / 100)
     }
 
     cart.itemsPrice = addDecimals(
         cart.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     )
     cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 0 : 100)
-    cart.taxPrice = addDecimals(Number((0.15 * cart.itemsPrice).toFixed(2)))
+    cart.taxPrice = addDecimals(Number((0.05 * cart.itemsPrice)))
     cart.totalPrice = (
         Number(cart.itemsPrice) +
         Number(cart.shippingPrice) +
         Number(cart.taxPrice)
-    ).toFixed(2)
+    )
 
     const orderCreate = useSelector(state => state.orderCreate)
     const { order, success, error } = orderCreate
 
+    const shipAddress = JSON.parse(localStorage.getItem('shippingAddress'))
+
     useEffect(() => {
         if (success) {
-            history.push(`/order/${order._id}`)
+            history.push(`/order/${order.data.order_id}`)
             dispatch({ type: USER_DETAILS_RESET })
             dispatch({ type: ORDER_CREATE_RESET })
         }
     }, [history, success])
 
+    useEffect(() => {
+        dispatch(calculateFee(shipAddress.district, shipAddress.ward))
+    }, []);
+
     const placeOrderHandler = () => {
         dispatch(
             createOrder({
-                orderItems: cart.cartItems,
-                shippingAddress: cart.shippingAddress,
-                paymentMethod: cart.paymentMethod,
-                itemsPrice: cart.itemsPrice,
-                shippingPrice: cart.shippingPrice,
-                taxPrice: cart.taxPrice,
-                totalPrice: cart.totalPrice,
+                items: cart.cartItems,
+                address: shipAddress.address,
+                shipFee: fees.total,
+                productFee: cart.totalPrice,
+                service_id: 53320,
+                service_type_id: 2,
+                user_id: userData.data.user_id,
+                name: user.data.name,
+                phone: user.data.phone,
+                status: "Unprocessed"
             })
         )
     }
@@ -72,9 +91,7 @@ const PlaceOrderScreen = ({ history }) => {
                             <h2>Shipping</h2>
                             <p>
                                 <strong>Address:</strong>
-                                {cart.shippingAddress.address}, {cart.shippingAddress.city}{' '}
-                                {cart.shippingAddress.postalCode},{' '}
-                                {cart.shippingAddress.country}
+                                {shipAddress.address}
                             </p>
                         </ListGroup.Item>
 
@@ -102,7 +119,7 @@ const PlaceOrderScreen = ({ history }) => {
                                                     />
                                                 </Col>
                                                 <Col>
-                                                    <Link to={`/product/${item.product}`}>
+                                                    <Link to={`/book/${item.book_id}`}>
                                                         {item.name}
                                                     </Link>
                                                 </Col>
@@ -126,25 +143,25 @@ const PlaceOrderScreen = ({ history }) => {
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Items</Col>
-                                    <Col>{cart.itemsPrice} VND</Col>
+                                    <Col>{numberWithCommas(cart.itemsPrice)} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Shipping</Col>
-                                    <Col>{cart.shippingPrice} VND</Col>
+                                    <Col>{numberWithCommas(fees?.total === undefined ? 0 : fees.total)} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
-                                    <Col>Tax</Col>
-                                    <Col>{cart.taxPrice} VND</Col>
+                                    <Col>Tax (5%)</Col>
+                                    <Col>{numberWithCommas(cart.taxPrice)} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <Row>
                                     <Col>Total</Col>
-                                    <Col>{cart.totalPrice} VND</Col>
+                                    <Col>{numberWithCommas(fees?.total === undefined ? cart.totalPrice : fees.total*1.0 + cart.totalPrice*1.0 )} VND</Col>
                                 </Row>
                             </ListGroup.Item>
                             <ListGroup.Item>
