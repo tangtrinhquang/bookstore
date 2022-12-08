@@ -12,12 +12,16 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { InputLabel } from '@material-ui/core';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { register } from '../../actions/userActions';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import AuthLayout from '../../layouts/AuthenticationLayout';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { variants } from '@catppuccin/palette'
+import { listProvinces, listDistricts, listWards } from '../../actions/locationActions';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -46,6 +50,9 @@ const Register = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
+    const [province, setProvince]= useState('');
+    const [district, setDistrict]= useState('');
+    const [ward, setWard]= useState('');
     const [address, setAddress] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -56,12 +63,24 @@ const Register = () => {
     const userRegister = useSelector((state) => state.userRegister)
     const { loading, error, userInfo } = userRegister
 
+    const provinceList = useSelector(state => state.provinceList);
+    const { provinces } = provinceList;
+    
+    const districtList = useSelector(state => state.districtList);
+    const { districts } = districtList;
+
+    const wardList = useSelector(state => state.wardList);
+    const { wards } = wardList;
+
     const redirect = location.search ? location.search.split('=')[1] : '/'
 
     useEffect(() => {
         if (userInfo) {
             navigate(redirect)
         }
+        if(provinces.length === 0){
+            dispatch(listProvinces());
+        }  
     }, [userInfo, redirect])
 
     const submitHandler = (e) => {
@@ -126,6 +145,61 @@ const Register = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                     />
+
+                    <InputLabel id='province-label'>Province</InputLabel>
+                                <Select
+                                    labelId='province-label'
+                                    label="Select Province"
+                                    variant="outlined"
+                                    id="province"
+                                    fullWidth
+                                    defaultValue={"0"}
+                                    onChange={(e) => {
+                                                        setProvince(e.target.value);
+                                                        dispatch(listDistricts(e.target.value))
+                                    }}
+                                >
+                                    <MenuItem value="0">--- Select Province ---</MenuItem>
+                                    {provinces.map((province, index) => (
+                                        <MenuItem key={index} value={province.ProvinceID}>{province.ProvinceName}</MenuItem>
+                                    ))}
+                                </Select>
+
+                                <InputLabel id='district-label'>District</InputLabel>
+                                <Select
+                                    labelId='district-label'
+                                    label="Select District"
+                                    variant="outlined"
+                                    id="district"
+                                    fullWidth
+                                    defaultValue={"0"}
+                                    onChange={(e) => {
+                                                        setDistrict(e.target.value);
+                                                        dispatch(listWards(e.target.value))
+                                    }}
+                                >
+                                    <MenuItem value="0">--- Select District ---</MenuItem>
+                                    {districts.map((district, index) => (
+                                        <MenuItem key={index} value={district.DistrictID}>{district.DistrictName}</MenuItem>
+                                    ))}
+                                </Select>
+
+                                <InputLabel id='ward-label'>Ward</InputLabel>
+                                <Select
+                                    labelId='ward-label'
+                                    label="Select Ward"
+                                    variant="outlined"
+                                    id="ward"
+                                    fullWidth
+                                    defaultValue={"0"}
+                                    onChange={(e) => setWard(e.target.value)}
+                                >
+                                    <MenuItem value="0">--- Select Ward ---</MenuItem>
+                                    {wards.map((ward, index) => (
+                                        <MenuItem key={index} value={ward.WardName}>{ward.WardName}</MenuItem>
+                                    ))}
+                                </Select>
+                    
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -137,7 +211,9 @@ const Register = () => {
                         autoComplete="address"
                         autoFocus
                         value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        onChange={(e) => setAddress(e.target.value + ', '+ ward + ', '
+                        + districts.find(item => item.DistrictID == district)?.DistrictName + ', '
+                        + provinces.find(item => item.ProvinceID == province)?.ProvinceName)}
                     />
                     <TextField
                         variant="outlined"

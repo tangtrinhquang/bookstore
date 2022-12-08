@@ -9,12 +9,16 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { InputLabel } from '@material-ui/core';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import { getUserDetail, updateUser } from '../../actions/userActions'
 import { USER_UPDATE_RESET } from '../../messages/userMessages'
 import MainLayout from '../../layouts/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
+import { listProvinces, listDistricts, listWards } from '../../actions/locationActions';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -48,6 +52,9 @@ const UserEdit = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
+    const [province, setProvince]= useState('');
+    const [district, setDistrict]= useState('');
+    const [ward, setWard]= useState('');
     const [address, setAddress] = useState('')
     // const [isAdmin, setIsAdmin] = useState(false)
 
@@ -55,6 +62,15 @@ const UserEdit = () => {
 
     const userDetail = useSelector((state) => state.userDetail)
     const { loading, error, user } = userDetail
+
+    const provinceList = useSelector(state => state.provinceList);
+    const { provinces } = provinceList;
+    
+    const districtList = useSelector(state => state.districtList);
+    const { districts } = districtList;
+
+    const wardList = useSelector(state => state.wardList);
+    const { wards } = wardList;
 
     const userUpdate = useSelector((state) => state.userUpdate)
     const {
@@ -69,19 +85,22 @@ const UserEdit = () => {
             window.location.href = "/users"
         } else {
             if (Object.keys(user).length === 0) {
-                dispatch(getUserDetail(userId))
+                dispatch(getUserDetail(userId));
+                dispatch(listProvinces());
             } else {
                 setName(user.data.name)
                 setEmail(user.data.email)
                 setPhone(user.data.phone)
-                setAddress(user.data.address)
+                setAddress(user.data.fullAddress)
             }
         }
     }, [dispatch, userId, user, successUpdate])
 
+    // const addressCode = user.data.address.split(",", 3);
+
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(updateUser({ user_id: userId, name: name, email: email, phone: phone, address: address }))
+        dispatch(updateUser({ user_id: userId, name: name, email: email, phone: phone, address: address, province_id: province, district_id: district, ward_id: ward }))
     }
 
     return (
@@ -141,16 +160,76 @@ const UserEdit = () => {
                                     onChange={(e) => setPhone(e.target.value)}
                                 />
                             </Grid>
+
+                            <Grid item xs={12}>
+                                <InputLabel id='province-label'>Province</InputLabel>
+                                <Select
+                                    labelId='province-label'
+                                    label="Select Province"
+                                    variant="outlined"
+                                    id="province"
+                                    fullWidth
+                                    defaultValue={user.data.province_id}
+                                    onChange={(e) => {
+                                                        setProvince(e.target.value);
+                                                        dispatch(listDistricts(e.target.value))
+                                    }}
+                                >
+                                    {provinces.map((province, index) => (
+                                        <MenuItem key={index} value={province.ProvinceID}>{province.ProvinceName}</MenuItem>
+                                    ))}
+                                </Select>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <InputLabel id='district-label'>District</InputLabel>
+                                <Select
+                                    labelId='district-label'
+                                    label="Select District"
+                                    variant="outlined"
+                                    id="district"
+                                    fullWidth
+                                    defaultValue={user.data.address.split(",", 3)[2]}
+                                    onChange={(e) => {
+                                                        setDistrict(e.target.value);
+                                                        dispatch(listWards(e.target.value))
+                                    }}
+                                >
+                                    {districts.map((district, index) => (
+                                        <MenuItem key={index} value={district.DistrictID}>{district.DistrictName}</MenuItem>
+                                    ))}
+                                </Select>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <InputLabel id='ward-label'>Ward</InputLabel>
+                                <Select
+                                    labelId='ward-label'
+                                    label="Select Ward"
+                                    variant="outlined"
+                                    id="ward"
+                                    fullWidth
+                                    defaultValue={user.data.address.split(",", 3)[1]}
+                                    onChange={(e) => setWard(e.target.value)}
+                                >
+                                    {wards.map((ward, index) => (
+                                        <MenuItem key={index} value={ward.WardID}>{ward.WardName}</MenuItem>
+                                    ))}
+                                </Select>
+                            </Grid>
+
                             <Grid item xs={12}>
                                 <TextField
                                     variant="outlined"
                                     required
                                     fullWidth
                                     id="address"
-                                    label="Enter Address"
+                                    label="Address"
                                     name="address"
-                                    defaultValue={user.data.address}
-                                    onChange={(e) => setAddress(e.target.value)}
+                                    defaultValue={user.data.fullAddress}
+                                    onChange={(e) => setAddress(e.target.value + ', '+ wards.find(item => item.WardID == ward)?.WardName + ', '
+                                    + districts.find(item => item.DistrictID == district)?.DistrictName + ', '
+                                    + provinces.find(item => item.ProvinceID == province)?.ProvinceName)}
                                 />
                             </Grid>
                             {/* <Grid item xs={12}>

@@ -42,12 +42,17 @@ import {
     publisherUpdateReducer,
 } from './publisherReducers'
 
-// import {
-//     orderDetailReducer,
-//     orderPayReducer,
-//     orderDeliverReducer,
-//     orderListReducer,
-// } from './orderReducers';
+import { 
+    provinceListReducer,
+    districtListReducer,
+    wardListReducer,
+} from './locationReducers'
+
+import {
+    orderDetailReducer,
+    orderPayReducer,
+    orderListReducer,
+} from './orderReducers';
 
 const reducer = combineReducers({
     bookList: bookListReducer,
@@ -82,10 +87,13 @@ const reducer = combineReducers({
     publisherDelete: publisherDeleteReducer,
     publisherUpdate: publisherUpdateReducer,
 
-    // orderDetail: orderDetailReducer,
-    // orderPay: orderPayReducer,
-    // orderDeliver: orderDeliverReducer,
-    // orderList: orderListReducer,
+    provinceList : provinceListReducer,
+    districtList : districtListReducer,
+    wardList : wardListReducer, 
+
+    orderDetail: orderDetailReducer,
+    orderPay: orderPayReducer,
+    orderList: orderListReducer,
 });
 
 export default reducer;

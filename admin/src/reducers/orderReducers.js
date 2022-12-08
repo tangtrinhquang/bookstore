@@ -13,11 +13,13 @@ export const orderDetailReducer = (
         case types.ORDER_DETAILS_SUCCESS:
             return {
                 loading: false,
-                order: action.payload,
+                order: action.payload.data,
+                user: action.payload.user.data,
+                books: action.payload.books.data,
             };
         case types.ORDER_DETAILS_FAIL:
             return {
-                loading: false,
+                loading: false, 
                 error: action.payload,
             };
         default:
@@ -25,7 +27,11 @@ export const orderDetailReducer = (
     };
 };
 
-export const orderPayReducer = (state = {}, action) => {
+export const orderPayReducer = (state = {
+    loading: false,
+    success: false,
+    error: null
+}, action) => {
     switch (action.type) {
         case types.ORDER_PAY_REQUEST:
             return {
@@ -42,29 +48,6 @@ export const orderPayReducer = (state = {}, action) => {
                 error: action.payload,
             };
         case types.ORDER_PAY_RESET:
-            return {};
-        default:
-            return state;
-    };
-};
-
-export const orderDeliverReducer = (state = {}, action) => {
-    switch (action.type) {
-        case types.ORDER_DELIVER_REQUEST:
-            return {
-                loading: true,
-            };
-        case types.ORDER_DELIVER_SUCCESS:
-            return {
-                loading: false,
-                success: true,
-            };
-        case types.ORDER_DELIVER_FAIL:
-            return {
-                loading: false,
-                error: action.payload,
-            };
-        case types.ORDER_DELIVER_RESET:
             return {};
         default:
             return state;

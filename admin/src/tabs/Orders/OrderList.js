@@ -8,6 +8,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import { listOrders } from '../../actions/orderActions'
@@ -41,24 +45,29 @@ const OrderList = () => {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
 
-    // useEffect(() => {
-    //     if (userInfo && userInfo.isAdmin) {
-    //         navigate(listOrders());
-    //     } else {
-    //         navigate('/login');
-    //     }
-    // }, [dispatch, userInfo]);
+    useEffect(() => {
+        if (!userInfo) {
+            navigate('/login');
+        }
+        if (orders.length === 0) {
+            dispatch(listOrders());
+        }
+    }, [dispatch, userInfo]);
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 
     return (
         <MainLayout>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                ORDER LIST
+                ORDER LIST ({orders?.data?.length})
             </Typography>
             {loading ? (
                 <Loader />
             ) : error ? (
                 <Message variant='error'>{error}</Message>
-            ) : (
+            ) : orders.length === 0 ? <Loader /> : (
                 <Table size="small">
                     <TableHead>
                         <TableRow>
@@ -67,33 +76,47 @@ const OrderList = () => {
                             <TableCell>DATE</TableCell>
                             <TableCell>TOTAL</TableCell>
                             <TableCell>PAID</TableCell>
-                            <TableCell>DELIVERED</TableCell>
-                            <TableCell align="right">VIEW</TableCell>
+                            <TableCell>STATUS</TableCell>
+                            <TableCell align="right">DETAIL</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {orders.map((order, index) => (
-                            <TableRow key={order._id}>
+                        {orders.data.map((order, index) => (
+                            <TableRow key={order.order_id}>
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell>{order.user && order.user.name}</TableCell>
+                                <TableCell>{order.user_id}</TableCell>
                                 <TableCell>{order.createdAt.substring(0, 10)}</TableCell>
-                                <TableCell>{order.totalPrice}</TableCell>
+                                <TableCell>{numberWithCommas(order.productFee)} VND</TableCell>
                                 <TableCell>
-                                    {order.isPaid ? (
-                                        order.paidAt.substring(0, 10)
+                                    {order.status === "Processed" ? (
+                                        <CheckCircleIcon />
                                     ) : (
                                         <HighlightOffIcon />
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    {order.isDelivered ? (
-                                        order.deliveredAt.substring(0, 10)
+                                    {order.status === "Processed" ? (
+                                        <>
+                                            <ListItem>
+                                                <ListItemIcon>
+                                                    <CheckCircleIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Processed" />
+                                            </ListItem>
+                                        </>
                                     ) : (
-                                        <HighlightOffIcon />
+                                        <>
+                                            <ListItem>
+                                                <ListItemIcon>
+                                                    <HighlightOffIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Unprocessed" />
+                                            </ListItem>
+                                        </>
                                     )}
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Link href={`/orders/${order._id}`} onClick={(e) => e.preventDefault}>
+                                    <Link href={`/orders/${order.order_id}`} onClick={(e) => e.preventDefault}>
                                         <Button variant="contained" color="primary" href="">
                                             <VisibilityIcon />
                                         </Button>

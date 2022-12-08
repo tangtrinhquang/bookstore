@@ -21,7 +21,7 @@ import PublisherList from '../tabs/Publishers/PublisherList';
 import PublisherEdit from '../tabs/Publishers/PublisherEdit';
 
 import OrderList from '../tabs/Orders/OrderList';
-import OrderDTL from '../tabs/Orders/Order';
+import Order from '../tabs/Orders/Order';
 
 import Profile from '../tabs/OtherSettings/Profile';
 import NotFound from '../tabs/OtherSettings/404';
@@ -68,10 +68,10 @@ export default function MainRoutes() {
                         <Route path=":pgNumber" element={<PublisherList/>} />
                     </Route>
 
-                    {/* <Route path='/orders'>
+                    <Route path='/orders'>
                         <Route index element={<OrderList/>} />
                         <Route path=':id' element={<Order/>} />
-                    </Route>  */}
+                    </Route> 
 
                     <Route path="/profile" element={<Profile/>} />
                     <Route path="*" element={<NotFound/>} />

@@ -286,7 +286,7 @@ const BookEdit = () => {
                                 <InputLabel id='author-label'>Select Author</InputLabel>
                                 <Select
                                     labelId='author-label'
-                                    label="Select Auhor"
+                                    label="Select Author"
                                     variant="outlined"
                                     id="author"
                                     defaultValue={""}
@@ -349,7 +349,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="width"
-                                    label="Enter Width"
+                                    label="Enter Width(cm)"
                                     name="witdth"
                                     defaultValue={""}
                                     onChange={(e) => setWidth(e.target.value)}
@@ -359,7 +359,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="length"
-                                    label="Enter Length"
+                                    label="Enter Length(cm)"
                                     name="length"
                                     defaultValue={""}
                                     onChange={(e) => setLength(e.target.value)}
@@ -369,7 +369,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="height"
-                                    label="Enter Height"
+                                    label="Enter Height(cm)"
                                     name="height"
                                     defaultValue={""}
                                     onChange={(e) => setHeight(e.target.value)}
@@ -379,7 +379,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="weight"
-                                    label="Enter Weight"
+                                    label="Enter Weight(g)"
                                     name="weight"
                                     defaultValue={""}
                                     onChange={(e) => setWeight(e.target.value)}
@@ -549,7 +549,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="width"
-                                    label="Enter Width"
+                                    label="Enter Width(cm)"
                                     name="witdth"
                                     defaultValue={book.width}
                                     onChange={(e) => setWidth(e.target.value)}
@@ -559,7 +559,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="length"
-                                    label="Enter Length"
+                                    label="Enter Length(cm)"
                                     name="length"
                                     defaultValue={book.length}
                                     onChange={(e) => setLength(e.target.value)}
@@ -569,7 +569,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="height"
-                                    label="Enter Height"
+                                    label="Enter Height(cm)"
                                     name="height"
                                     defaultValue={book.height}
                                     onChange={(e) => setHeight(e.target.value)}
@@ -579,7 +579,7 @@ const BookEdit = () => {
                                     type="number"
                                     required
                                     id="weight"
-                                    label="Enter Weight"
+                                    label="Enter Weight(g)"
                                     name="weight"
                                     defaultValue={book.weight}
                                     onChange={(e) => setWeight(e.target.value)}
