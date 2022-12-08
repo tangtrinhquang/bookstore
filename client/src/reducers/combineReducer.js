@@ -18,8 +18,7 @@ import {
     orderCreateReducer,
     orderDetailReducer,
     orderPayReducer,
-    orderDeliverReducer,
-    orderListMyReducer,
+    myOrderListReducer,
 } from './orderReducers';
 
 import {
@@ -44,6 +43,13 @@ import {
     publisherUpdateReducer,
 } from './publisherReducers'    
 
+import { 
+    provinceListReducer,
+    districtListReducer,
+    wardListReducer,
+    calculateFeeReducer,
+} from './locationReducers'
+
 import { cartReducer } from './cartReducers';
 
 const reducer = combineReducers({
@@ -62,8 +68,7 @@ const reducer = combineReducers({
     orderCreate: orderCreateReducer,
     orderDetail: orderDetailReducer,
     orderPay: orderPayReducer,
-    orderDeliver: orderDeliverReducer,
-    orderListMy: orderListMyReducer,
+    myOrderList: myOrderListReducer,
 
     authorList: authorListReducer,
     authorDetail: authorDetailReducer,
@@ -80,6 +85,12 @@ const reducer = combineReducers({
     publisherCreate: publisherCreateReducer,
     publisherDelete: publisherDeleteReducer,
     publisherUpdate: publisherUpdateReducer,
+
+    provinceList : provinceListReducer,
+    districtList : districtListReducer,
+    wardList : wardListReducer, 
+
+    calcFee : calculateFeeReducer,
 });
 
 export default reducer;

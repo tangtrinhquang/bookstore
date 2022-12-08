@@ -49,24 +49,15 @@ export const logout = () => (dispatch) => {
     document.location.href = '/login'
 }
 
-export const register = (name, email, password) => async (dispatch) => {
+export const register = (name, email, password, phone, address, province, district, ward) => async (dispatch) => {
     try {
         dispatch({
             type: types.USER_REGISTER_REQUEST,
         })
 
-        const userData = JSON.parse(localStorage.getItem('userInfo'))
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userData.data.access_token}`,
-            },
-        };
-
         const { data } = await axios.post(
             process.env.REACT_APP_API_URL+`/api/auth/register`,
-            { name, email, password },
-            config
+            { name: name, email: email, password: password, phone: phone, address: address, province_id: province, district_id: district, ward_id: ward }
         )
 
         dispatch({

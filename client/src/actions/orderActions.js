@@ -61,9 +61,11 @@ export const getOrderDetail = (id) => async (dispatch) => {
 
         const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/order/${id}`, config)
 
+        const books = await axios.get(process.env.REACT_APP_API_URL+`/api/book`, config);
+
         dispatch({
             type: types.ORDER_DETAILS_SUCCESS,
-            payload: data,
+            payload: {data, books}
         })
     } catch (error) {
         const message =
@@ -117,44 +119,7 @@ export const payOrder = (orderId, paymentResult) => async (dispatch) => {
     }
 }
 
-export const deliverOrder = (order) => async(dispatch) => {
-    try {
-        dispatch({ type: types.ORDER_DELIVER_REQUEST })
-
-        const userData = JSON.parse(localStorage.getItem('userInfo'))
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userData.data.access_token}`,
-            },
-        };
-
-        const { data } = await axios.put(
-            process.env.REACT_APP_API_URL+`/api/order/${order._id}/deliver`,
-            {},
-            config,
-        )
-
-        dispatch({
-            type: types.ORDER_DELIVER_SUCCESS,
-            payload: data,
-        })
-    } catch (error) {
-        const message =
-            error.response && error.response.data.message
-                ? error.response.data.message
-                : error.message
-        if (message === 'Not authorized, token failed') {
-            dispatch(logout())
-        }
-        dispatch({
-            type: types.ORDER_DELIVER_FAIL,
-            payload: message,
-        })
-    }
-}
-
-export const listMyOrders = () => async (dispatch) => {
+export const listMyOrders = (userId) => async (dispatch) => {
     try {
         dispatch({
             type: types.ORDER_LIST_MY_REQUEST,
@@ -168,11 +133,15 @@ export const listMyOrders = () => async (dispatch) => {
             },
         };
 
-        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/order/my_orders`, config)
+        const { data } = await axios.get(process.env.REACT_APP_API_URL+`/api/order/`, config)
+
+        const filteredData = data.data.filter(order => order.user_id === userId)
+
+        console.log(filteredData);
 
         dispatch({
             type: types.ORDER_LIST_MY_SUCCESS,
-            payload: data,
+            payload: filteredData,
         })
     } catch (error) {
         const message =
